@@ -1,4 +1,30 @@
-﻿# Variables
+﻿<# 
+.Synopsis
+    Used to move the ComputerObject between OU's
+
+.DESCRIPTION
+    This script is intended to be used with "ConfigMgr Webservice" and "ConfigMgr OSD FrontEnd" by Nickolaj Andersen. 
+    It uses a custom function to move the computer object between OU's in the Active Directory.
+    I relies on the "OSDDomainOUName" -variable which is set with diffrent LDAP-path's when you choose directory in the FrontEnd.
+
+.NOTES
+
+	    FileName:  MoveADComputerToOU.ps1
+	  
+	    Author:  Love Arvidsson
+	
+	    Contact:  Love.Arvidsson@norrkoping.se
+	
+	    Created:   2019-07-29 
+	
+	    Updated:
+	
+
+    Version history:
+
+#>
+ 
+ # Variables
 $SecretKey = "<ENTER SECRET KEY>"
 
 # Construct TSEnvironment object
