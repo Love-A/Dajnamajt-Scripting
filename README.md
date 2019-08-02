@@ -1,2 +1,4 @@
 # Love-A
-Mostly Powershell stuff and QoL things. Almost everything is used with SCCM OSD.
+Scripts for OSD and Device management.
+
+Scripts provided as is, with no liability, and should be tested in a controlled environment.
