@@ -5,7 +5,7 @@
 .DESCRIPTION
     This script is intended to be used with "ConfigMgr Webservice" and "ConfigMgr OSD FrontEnd" by Nickolaj Andersen. 
     It uses a custom function from "ConfigMgr Webservice" to move the computer object between OU's in the Active Directory.
-    I relies on the "OSDDomainOUName" -variable which is set with diffrent LDAP-path's when you choose directory in the FrontEnd.
+    It relies on the "OSDDomainOUName" -variable which is set with diffrent LDAP-path's when you choose directory in the FrontEnd.
 
 .NOTES
 
