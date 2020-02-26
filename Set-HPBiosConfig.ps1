@@ -93,6 +93,8 @@ param (
 			$LogDir = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
 		    }
         Else{
+            try { $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Stop }
+            catch [System.Exception] { Write-Warning -Message "Unable to construct Microsoft.SMS.TSEnvironment object" ; exit 3 }
 	        $LogDir = $TSEnv.Value("_SMSTSLogPath")
             }
     }
