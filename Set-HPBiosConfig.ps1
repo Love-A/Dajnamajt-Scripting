@@ -1,4 +1,4 @@
-﻿<# 
+<# 
 .Synopsis
     Set HP BIOS Config
 
@@ -21,7 +21,7 @@
     For more information on the BIOSConfigUtility:
     http://ftp.hp.com/pub/caps-softpaq/cmit/whitepapers/BIOS_Configuration_Utility_User_Guide.pdf
 
-.PARAMETER PasswordFile
+.PARAMETER Password
     Used to define the name of your Password.bin
 
     For offline set:
@@ -59,7 +59,7 @@
 
     Version history:
         
-        1.0 - (2020-02-24) Script Created
+        1.0
 
 #>
 
@@ -90,13 +90,13 @@ param (
 
 	switch ($LogPath) {
 		"OS" {
-			$LogsDirectory = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
+			$LogDir = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
 		    }
         Else{
-	        $LogsDirectory = $Script:TSEnvironment.Value("_SMSTSLogPath")
+	        $LogDir = $TSEnv.Value("_SMSTSLogPath")
             }
     }
 
 # Run the BiosConfigUtility and set BIOS settings
 
-    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogsDirectory\BiosSettingsUpdate.log -NoNewWindow).ExitCode
+    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogDir\BiosSettingsUpdate.log -NoNewWindow).ExitCode
