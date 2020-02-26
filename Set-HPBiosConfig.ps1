@@ -21,7 +21,7 @@
     For more information on the BIOSConfigUtility:
     http://ftp.hp.com/pub/caps-softpaq/cmit/whitepapers/BIOS_Configuration_Utility_User_Guide.pdf
 
-.PARAMETER Password
+.PARAMETER PasswordFile
     Used to define the name of your Password.bin
 
     For offline set:
