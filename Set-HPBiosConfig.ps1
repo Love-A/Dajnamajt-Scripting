@@ -33,7 +33,7 @@
     For offline set:
     ".\BiosConfigUtility64.exe"
 
-.PARAMETER LogPath
+.PARAMETER LogPath - NOT USED AT THE MOMENT 
     To specify if script is ran in TS or in OS to determine loglocation.
 
 .EXAMPLE 1 When using UNC
@@ -69,9 +69,9 @@ param (
 	[ValidateNotNullOrEmpty()]
 	[string]$PasswordFile,
 
-	[parameter(Mandatory = $True, HelpMessage = "Used to set logpath, valid option 'OS' for use in full OS or 'TS' when used during TS/OSD ")]
+	<#[parameter(Mandatory = $True, HelpMessage = "Used to set logpath, valid option 'OS' for use in full OS or 'TS' when used during TS/OSD ")]
 	[ValidateNotNullOrEmpty()]
-	[string]$LogPath,
+	[string]$LogPath,#>
 
 	[parameter(Mandatory = $true, HelpMessage = "Set path to the BiosConfigUtility64.exe, which also should contain your Password.bin and settings.txt file ")]
 	[ValidateNotNullOrEmpty()]
@@ -88,17 +88,17 @@ param (
 
 # Set Logpath
 
-	switch ($LogPath) {
+    $LogPath = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
+
+        <#	switch ($LogPath) {
 		"OS" {
 			$LogDir = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
 		    }
         Else{
-            try { $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Stop }
-            catch [System.Exception] { Write-Warning -Message "Unable to construct Microsoft.SMS.TSEnvironment object" ; exit 3 }
 	        $LogDir = $TSEnv.Value("_SMSTSLogPath")
             }
-    }
+        }#>
 
 # Run the BiosConfigUtility and set BIOS settings
 
-    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogDir\BiosSettingsUpdate.log -NoNewWindow).ExitCode
+    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -Encoding "Default" -Append -NoNewWindow).ExitCode
