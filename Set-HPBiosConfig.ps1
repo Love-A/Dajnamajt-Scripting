@@ -33,7 +33,7 @@
     For offline set:
     ".\BiosConfigUtility64.exe"
 
-.PARAMETER Update
+.PARAMETER LogPath
     To specify if script is ran in TS or in OS to determine loglocation.
 
 .EXAMPLE 1 When using UNC
