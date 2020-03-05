@@ -101,4 +101,4 @@ param (
 
 # Run the BiosConfigUtility and set BIOS settings
 
-    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -Encoding "Default" -Append -NoNewWindow).ExitCode
+    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -NoNewWindow).ExitCode
