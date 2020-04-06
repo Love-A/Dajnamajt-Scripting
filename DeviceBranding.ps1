@@ -13,17 +13,20 @@
 	
 .NOTES
 
-	    FileName:  DeviceBranding.ps1
+	    FileName: DeviceBranding.ps1
 	  
-	    Author:  Love Arvidsson
+	    Author: Love Arvidsson
 	
 	    Contact: Love.Arvidsson@norrkoping.se
 	
-	    Created:   2019-07-19
+	    Created: 2019-07-19
 	
-	    Updated:
+	    Updated: 2020-04-06
 
-    Version history:
+    Version history: 
+    
+    1.0 ... 2019-07-19 - Script Created
+    1.1 ... 2020-04-06 - Set the branding based on $ORG value instead of $OU value as we never changed to the new FrontEnd which used the $OU variable.
 
 #>
 
@@ -35,8 +38,8 @@ catch [System.Exception] {
     Write-Warning -Message "Unable to construct Microsoft.SMS.TSEnvironment object" ; exit 3
 }
 
-#Get OU variable value
-$OU = $TSEnvironment.Value("OSDDomainOUName")
+#Get ORG variable value to determine switch
+$ORG = $TSEnvironment.Value("ORG")
 
 #Get Date
 $Date = Get-Date -Format "MM/dd/yyyy"
@@ -58,8 +61,8 @@ $ValuePath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninst
         New-ItemProperty -Path $ValuePath -Name "NoRepair" -Value 1 -Type DWord
         New-ItemProperty -Path $ValuePath -Name "NoRemove" -Value 1 -Type DWord
             
-#Determine the branding based upon the $OU variable value
-    switch ($OU) {
+#Determine the branding based upon the $ORG variable value
+    switch ($ORG) {
            "LDAP://OU=Devices,DC=DOMAIN,DC=DOMAIN,DC=COM" {
             set-ItemProperty -Path $ValuePath -Name DisplayVersion -Value ORGANISATION01-W10
         }
