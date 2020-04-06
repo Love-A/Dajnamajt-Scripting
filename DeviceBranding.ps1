@@ -63,10 +63,10 @@ $ValuePath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninst
             
 #Determine the branding based upon the $ORG variable value
     switch ($ORG) {
-           "LDAP://OU=Devices,DC=DOMAIN,DC=DOMAIN,DC=COM" {
+           "ORGANISATION1" {
             set-ItemProperty -Path $ValuePath -Name DisplayVersion -Value ORGANISATION01-W10
         }
-            "LDAP://OU=Devices,DC=DOMAIN,DC=DOMAIN,DC=COM" {
+            "ORGANISATION2" {
             set-ItemProperty -Path $ValuePath -Name DisplayVersion -Value ORGANISATION02-W10
         }
     }
