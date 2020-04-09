@@ -27,6 +27,7 @@
     
     1.0 ... 2019-07-19 - Script Created
     1.1 ... 2020-04-06 - Set the branding based on $ORG value instead of $OU value as we never changed to the new FrontEnd which used the $OU variable.
+    1.2 ... 2020-04-09 - Removed the Switch and just let the $ORG decide brandning.
 
 #>
 
@@ -40,6 +41,9 @@ catch [System.Exception] {
 
 #Get ORG variable value to determine switch
 $ORG = $TSEnvironment.Value("ORG")
+
+# Get OSDComputerName variable value
+$OSDComputerName = $TSEnvironment.Value("OSDComputerName")
 
 #Get Date
 $Date = Get-Date -Format "MM/dd/yyyy"
@@ -61,14 +65,10 @@ $ValuePath = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninst
         New-ItemProperty -Path $ValuePath -Name "NoRepair" -Value 1 -Type DWord
         New-ItemProperty -Path $ValuePath -Name "NoRemove" -Value 1 -Type DWord
             
-#Determine the branding based upon the $ORG variable value
-    switch ($ORG) {
-           "ORGANISATION1" {
-            set-ItemProperty -Path $ValuePath -Name DisplayVersion -Value ORGANISATION01-W10
-        }
-            "ORGANISATION2" {
-            set-ItemProperty -Path $ValuePath -Name DisplayVersion -Value ORGANISATION02-W10
-        }
-    }
-   
+# Set DisplayVersion branding based on $ORG
+set-ItemProperty -Path $ValuePath -Name DisplayVersion -Value $ORG
+
+    Write-Output "$OSDComputerName Branded as $ORG"
+            
 exit $LASTEXITCODE
+
