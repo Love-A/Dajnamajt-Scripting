@@ -24,23 +24,23 @@
 .PARAMETER PasswordFile
     Used to define the name of your Password.bin
 
-    For offline set:
-    eg "password.bin" 
+    For local or package set:
+    eg ".\password.bin" 
 
 .PARAMETER BiosConfigUtility
     Used to define the path to your BiosConfigUtility directory, which should also contain you password.bin and biossettings.txt -files.
 
-    For offline set:
+    For local or package set:
     ".\BiosConfigUtility64.exe"
 
-.PARAMETER LogPath - NOT USED AT THE MOMENT 
+.PARAMETER Deploymenttype
     To specify if script is ran in TS or in OS to determine loglocation.
 
 .EXAMPLE 1 When using UNC
-    PS > .\Set-BiosConfig.ps1 -BiosConfigUtility \\SCCMSERVER\SOURCES\OSD\BIOSconfigUtility64.exe -PasswordFile "Password.bin" -LogPath "OS"
+    PS > .\Set-HPBiosConfig.ps1 -BiosConfigUtility "\\SCCMSERVER\SOURCES\OSD\BIOSconfigUtility64.exe" -PasswordFile "Password.bin" -Deploymenttype "OS"
 
 .EXAMPLE 2 Running local or package
-    PS > .\Set-HPBiosConfig.ps1 -PasswordFile Password.bin -LogPath TS -BiosConfigUtility .\BiosConfigUtility64.exe
+    PS > .\Set-HPBiosConfig.ps1 -BiosConfigUtility ".\BiosConfigUtility64.exe" -PasswordFile "Password.bin" -Deploymenttype "TS"
 
 
 
@@ -69,9 +69,9 @@ param (
 	[ValidateNotNullOrEmpty()]
 	[string]$PasswordFile,
 
-	<#[parameter(Mandatory = $True, HelpMessage = "Used to set logpath, valid option 'OS' for use in full OS or 'TS' when used during TS/OSD ")]
+	[parameter(Mandatory = $True, HelpMessage = "Used to set logpath, valid option 'OS' for use in full OS or 'TS' when used during TS/OSD ")]
 	[ValidateNotNullOrEmpty()]
-	[string]$LogPath,#>
+	[string]$Deploymenttype,
 
 	[parameter(Mandatory = $true, HelpMessage = "Set path to the BiosConfigUtility64.exe, which also should contain your Password.bin and settings.txt file ")]
 	[ValidateNotNullOrEmpty()]
@@ -88,17 +88,25 @@ param (
 
 # Set Logpath
 
-    $LogPath = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
-
-        <#	switch ($LogPath) {
-		"OS" {
-			$LogDir = Join-Path -Path $env:SystemRoot -ChildPath "Temp"
-		    }
-        Else{
-	        $LogDir = $TSEnv.Value("_SMSTSLogPath")
+	switch ($Deploymenttype) {
+		'OS'{
+		    $LogPath = Join-Path -Path $env:SystemRoot -ChildPath 'Temp'
+		}
+        'TS'{
+            # Construct TSEnvironment object
+            try {
+                $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Stop
             }
-        }#>
+            catch [System.Exception] {
+                Write-Warning -Message "Unable to construct Microsoft.SMS.TSEnvironment object" ; exit 3
+            }
+
+	        # Get Logpath
+            $LogPath = $TSEnvironment.Value("_SMSTSLogPath")
+
+        }
+    }
 
 # Run the BiosConfigUtility and set BIOS settings
 
-    (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -NoNewWindow).ExitCode
+   (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -WindowStyle hidden).ExitCode
