@@ -46,15 +46,15 @@
 
 .NOTES
 
-	    FileName:  Set-HPBiosConfig.ps1
+	    FileName: Set-HPBiosConfig.ps1
 	  
-	    Author:  Love Arvidsson
+	    Author: Love Arvidsson
 	
-	    Contact:  Love.Arvidsson@norrkoping.se
+	    Contact: Love.Arvidsson@norrkoping.se
 	
-	    Created:   2020-02-24
+	    Created: 2020-02-24
 	
-	    Updated:
+	    Updated: 2020-04-16
 	
 
     Version history:
