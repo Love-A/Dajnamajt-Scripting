@@ -83,7 +83,7 @@ param (
 
     $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty Model
     
-    # Used if you choose to not use a share, or when run on Offline-media.
+    # Used if you run local or package.
     $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 
 # Set Logpath
