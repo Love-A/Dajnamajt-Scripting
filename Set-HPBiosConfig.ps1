@@ -92,20 +92,20 @@ param (
 		'OS'{
 		    $LogPath = Join-Path -Path $env:SystemRoot -ChildPath 'Temp'
 		}
-        'TS'{
-            # Construct TSEnvironment object
-            try {
-                $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Stop
-            }
-            catch [System.Exception] {
-                Write-Warning -Message "Unable to construct Microsoft.SMS.TSEnvironment object" ; exit 3
-            }
+		'TS'{
+		    # Construct TSEnvironment object
+		    try {
+			$TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Stop
+		    }
+		    catch [System.Exception] {
+			Write-Warning -Message "Unable to construct Microsoft.SMS.TSEnvironment object" ; exit 3
+		    }
 
-	        # Get Logpath
-            $LogPath = $TSEnvironment.Value("_SMSTSLogPath")
+			# Get Logpath
+		    $LogPath = $TSEnvironment.Value("_SMSTSLogPath")
 
-        }
-    }
+        	}
+    	}
 
 # Run the BiosConfigUtility and set BIOS settings
 
