@@ -83,7 +83,8 @@ param (
 # Gather System preferences
 
     $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty Model
-    
+        Write-Output "Determined System Model is $ComputerSystemModel. Searching for BIOS-Settings..."
+        
     # Used if you run local or package.
     $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
 
@@ -156,12 +157,12 @@ param (
        }
 
        "11" {
-       Write-Warning "Config file not valid. BCU was unable to locate the configuration file or unable to read the file at the specified path."
+       Write-Warning "Config file not valid. BCU was unable to locate the configuration file for $ComputerSystemModel or unable to read the file at the specified path."
        Exit 11
        }
 
        "12" {
-       Write-Warning "First line in config file is not the keyword 'BIOSConfig.' First line in the configuration file must be the word BIOSConfig followed by the file format version, currently 1.0."
+       Write-Warning "First line in config file is not the keyword 'BIOSConfig.' First line in the configuration file must be the word 'BIOSConfig' followed by the file format version, currently 1.0."
        Exit 12
        }
 
