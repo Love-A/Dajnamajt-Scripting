@@ -25,10 +25,10 @@
     Used to define the name of your Password.bin
 
     For local or package set:
-    eg ".\password.bin" 
+    eg "password" 
 
-.PARAMETER BiosConfigUtility
-    Used to define the path to your BiosConfigUtility directory, which should also contain you password.bin and biossettings.txt -files.
+.PARAMETER BCUPath
+    Used to define the path to your BiosConfigUtility.exe directory, which should also contain you password.bin and biossettings.txt -files.
 
     For local or package set:
     ".\BiosConfigUtility64.exe"
@@ -37,30 +37,30 @@
     To specify if script is ran in TS or in OS to determine loglocation.
 
 .EXAMPLE 1 When using UNC
-    PS > .\Set-HPBiosConfig.ps1 -BiosConfigUtility "\\SCCMSERVER\SOURCES\OSD\BIOSconfigUtility64.exe" -PasswordFile "Password.bin" -DeploymentType "OS"
+    PS > .\Set-HPBiosConfig.ps1 -BCUPath "\\SCCMSERVER\SOURCES\OSD" -PasswordFile "Password" -DeploymentType "OS"
 
 .EXAMPLE 2 Running local or package
-    PS > .\Set-HPBiosConfig.ps1 -BiosConfigUtility ".\BiosConfigUtility64.exe" -PasswordFile "Password.bin" -DeploymentType "TS"
+    PS > .\Set-HPBiosConfig.ps1 -BCUPath ".\BiosConfigUtility64.exe" -PasswordFile "Password" -DeploymentType "TS"
 
 
 
 .NOTES
 
-	    FileName: Set-HPBiosConfig.ps1
+	    FileName:  Set-HPBiosConfig.ps1
 	  
-	    Author: Love Arvidsson
+	    Author:  Love Arvidsson
 	
-	    Contact: Love.Arvidsson@norrkoping.se
+	    Contact:  Love.Arvidsson@norrkoping.se
 	
-	    Created: 2020-02-24
+	    Created:   2020-02-24
 	
-	    Updated: 2020-04-16
+	    Updated:
 	
 
     Version history:
         
         1.0 - (2020-02-24) Script Created
-        1.1 - (2020-04-16) Added some logging and a switch to determine exitcode
+        2.0 - (2020-04-17) Almost a complete re-write of the script. Added more logging, and altered alot how the script work to make it more dynamic.
 
 #>
 
@@ -76,17 +76,14 @@ param (
 
 	[parameter(Mandatory = $true, HelpMessage = "Set path to the BiosConfigUtility64.exe, which also should contain your Password.bin and settings.txt file ")]
 	[ValidateNotNullOrEmpty()]
-	[string]$BiosConfigUtility
+	[string]$BCUPath
 
 )
 
 # Gather System preferences
 
     $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty Model
-        Write-Output "Determined System Model is $ComputerSystemModel. Searching for BIOS-Settings..."
-        
-    # Used if you run local or package.
-    $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     Write-Output "Determined System Model is $ComputerSystemModel. Searching for BIOS-Settings..."
 
 # Set Logpath
 
@@ -111,79 +108,77 @@ param (
 
 # Run the BiosConfigUtility and set BIOS settings
 
-  $BiosConfig = (Start-Process $BIOSConfigUtility -ArgumentList /Set:"`"$ComputerSystemModel.txt`"", /cpwdfile:"`"$PasswordFile`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -WindowStyle hidden).ExitCode
-  
-# Exit Script based on ExitCode from BCU
+  $BiosConfig = (Start-Process "$BCUPath\Biosconfigutility64.exe" -ArgumentList /Set:"`"$BCUPath\$ComputerSystemModel.txt`"", /cpwdfile:"`"$BCUPath\$PasswordFile.bin`"", /verbose -Wait -Passthru -RedirectStandardOutput $LogPath\BiosSettingsUpdate.log -WindowStyle hidden).ExitCode
+    Switch ($Biosconfig){
+           "0"{
+           Write-Output "Bios Config set $ComputerSystemModel. For more information see log at $LogPath\BiosSettingsUpdate.log..." 
+           Exit 0
+           }
 
-  Switch ($Biosconfig){
-       "0"{
-       Write-Output "Bios Config set $ComputerSystemModel. For more information see log at $LogPath\BiosSettingsUpdate.log..." 
-       Exit 0
+           "1" {
+           Write-Warning "Not Supported WMI result code – Setting is not supported on system."
+           Exit 1
+           }
+
+           "2" {
+           Write-Warning "Unknown WMI result code – Operation failed for unknown reason."
+           Exit 2
+           }
+
+           "3" {
+           Write-Warning "Timeout WMI result code – Operation timed out."
+           Exit 3
+           }
+
+           "4" {
+           Write-Warning "Failed WMI result code – Operation failed."
+           Exit 4
+           }
+
+           "5" {
+           Write-Warning "Invalid Parameter WMI result code – A parameter is missing or wrong type."
+           Exit 5
+           }
+
+           "6" {
+           Write-Warning "Access Denied WMI result code – Setting modification failed due to BIOS permissions."
+           Exit 6
+           }
+
+           "10" {
+           Write-Warning "Valid password not provided. BCU was unable to find a valid password on the command-line."
+           Exit 10
+           }
+
+           "11" {
+           Write-Warning "Config file not valid. BCU was unable to locate the configuration file for $ComputerSystemModel or unable to read the file at the specified path."
+           Exit 11
+           }
+
+           "12" {
+           Write-Warning "First line in config file is not the keyword 'BIOSConfig.' First line in the configuration file must be the word 'BIOSConfig' followed by the file format version, currently 1.0."
+           Exit 12
+           }
+
+           "13" {
+           Write-Warning "Failed to change setting. BCU failed to change one or more settings. For more information see log at $LogPath\BiosSettingsUpdate.log..."
+           Exit 13
+           }
+
+           "14" {
+           Write-Warning "Unable to write to file or system. BCU was unable to connect to HP BIOS WMI. WMI classes are corrupted or the system is not supported."
+           Exit 14
+           }
+
+           "16" {
+           Write-Warning "BCU was unable to connect to HP BIOS WMI. WMI classes are corrupted or the system is not supported."
+           Exit 16
+           }
+
+           "30" {
+           Write-Warning "Password file error. Unable to read or decrypt the password file."
+           Exit 30
+           }
+
        }
 
-       "1" {
-       Write-Warning "Not Supported WMI result code – Setting is not supported on system."
-       Exit 1
-       }
-
-       "2" {
-       Write-Warning "Unknown WMI result code – Operation failed for unknown reason."
-       Exit 2
-       }
-
-       "3" {
-       Write-Warning "Timeout WMI result code – Operation timed out."
-       Exit 3
-       }
-
-       "4" {
-       Write-Warning "Failed WMI result code – Operation failed."
-       Exit 4
-       }
-
-       "5" {
-       Write-Warning "Invalid Parameter WMI result code – A parameter is missing or wrong type."
-       Exit 5
-       }
-
-       "6" {
-       Write-Warning "Access Denied WMI result code – Setting modification failed due to BIOS permissions."
-       Exit 6
-       }
-
-       "10" {
-       Write-Warning "Valid password not provided. BCU was unable to find a valid password on the command-line."
-       Exit 10
-       }
-
-       "11" {
-       Write-Warning "Config file not valid. BCU was unable to locate the configuration file for $ComputerSystemModel or unable to read the file at the specified path."
-       Exit 11
-       }
-
-       "12" {
-       Write-Warning "First line in config file is not the keyword 'BIOSConfig.' First line in the configuration file must be the word 'BIOSConfig' followed by the file format version, currently 1.0."
-       Exit 12
-       }
-
-       "13" {
-       Write-Warning "Failed to change setting. BCU failed to change one or more settings. For more information see log at $LogPath\BiosSettingsUpdate.log..."
-       Exit 13
-       }
-
-       "14" {
-       Write-Warning "Unable to write to file or system. BCU was unable to connect to HP BIOS WMI. WMI classes are corrupted or the system is not supported."
-       Exit 14
-       }
-
-       "16" {
-       Write-Warning "BCU was unable to connect to HP BIOS WMI. WMI classes are corrupted or the system is not supported."
-       Exit 16
-       }
-
-       "30" {
-       Write-Warning "Password file error. Unable to read or decrypt the password file."
-       Exit 30
-       }
-
-   }
