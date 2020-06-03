@@ -5,6 +5,8 @@
 
 .DESCRIPTION
     A Simple GUI to search for devices in MECM and then remove them
+    
+    Cred to FoxDeploy.com for making the guides i used to get started with XAML in Powershell.
 
 
 .EXAMPLE
