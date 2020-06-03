@@ -14,6 +14,10 @@
      " $WPFRunButton.Content = 'Start Installation' "
      Change this for the Start button, if you want it to say something else.
      
+     
+     
+     Cred to FoxDeploy.com for making the guides i used to get started with XAML in Powershell.
+     
 .EXAMPLE
     PS > Set-Organisation.ps1
 
