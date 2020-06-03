@@ -42,10 +42,11 @@
     
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName System.Windows.Forms
+    
 #endregion
 
 #region VisualStudio XAML
-#===========================================================================
+
 $InputXML = @"
 <Window x:Name="Set_Organisation" x:Class="Set_Org_Core.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -90,12 +91,10 @@ $InputXML = @"
         }
         catch {throw}
     }
-#===========================================================================
+
 #endregion VS XAML
 
 #region Load XAML Objects In PowerShell
-#===========================================================================
-
  
 Function Get-FormVariables{
 if ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
@@ -104,43 +103,37 @@ get-variable WPF*
  
 Get-FormVariables
 
-#===========================================================================
 #endregion Load XAML Objects In PowerShell
 
-
-#===========================================================================
 # Element Code
-#===========================================================================
 
-# Construct TS Env
+	# Construct TS Env
 
-    $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment
+	    $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment
 
-# Description
+	# Description
 
-    $WPFDescription.Text = 'Choose Organisation'
-    $WPFDescription.FontSize = '12'
+	    $WPFDescription.Text = 'Choose Organisation'
+	    $WPFDescription.FontSize = '12'
 
-# Add ListBox Items
+	# Add ListBox Items
 
-    [VOID]$WPFListBox.Items.Add('ORGANISATION01')
-    [VOID]$WPFListBox.Items.Add('ORGANISATION02')
-    [VOID]$WPFListBox.Items.Add('ORGANISATION03')
+	    [VOID]$WPFListBox.Items.Add('ORGANISATION01')
+	    [VOID]$WPFListBox.Items.Add('ORGANISATION02')
+	    [VOID]$WPFListBox.Items.Add('ORGANISATION03')
 
 
-# RunButton
-     
-     # Text
-     $WPFRunButton.Content = 'Start Installation'
-     
-     # Function   
-     $WPFRunButton.Add_Click({
-     $TSEnvironment.Value("ORG") = $WPFListBox.SelectedItem
-     $Form.Close()
-     })
+	# RunButton
 
-#===========================================================================
-# Shows the form
-#===========================================================================
+	     # Text
+	     $WPFRunButton.Content = 'Start Installation'
 
-[void]$Form.ShowDialog()
+	     # Function   
+	     $WPFRunButton.Add_Click({
+	     $TSEnvironment.Value("ORG") = $WPFListBox.SelectedItem
+	     $Form.Close()
+	     })
+
+
+	# Shows the form
+	[void]$Form.ShowDialog()
