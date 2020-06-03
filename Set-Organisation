@@ -6,9 +6,14 @@
 .DESCRIPTION
     This is used to set the TSValue 'ORG', used to later in the TS for eg DeviceBranding, specific app installation, or OU transfer.
 
-    Just change the 'ORGANISATION' in ListBox.Items "[VOID]$WPFListBox.Items.Add('ORGANISATION01'), to whatever you want each org to be named. You can also just copy one row and change it to add more choices.
-
-
+    Just change the 'ORGANISATION' in ListBox.Items "[VOID]$WPFListBox.Items.Add('ORGANISATION01')" to whatever you want each org to be named. You can also just copy one row and change it to add more choices.
+    
+     " $WPFDescription.Text = 'Choose Organisation' "
+     Change this to change the top text
+     
+     " $WPFRunButton.Content = 'Start Installation' "
+     Change this for the Start button, if you want it to say something else.
+     
 .EXAMPLE
     PS > Set-Organisation.ps1
 
@@ -113,7 +118,7 @@ Get-FormVariables
 
 # Description
 
-    $WPFDescription.Text = 'Välj Organisation'
+    $WPFDescription.Text = 'Choose Organisation'
     $WPFDescription.FontSize = '12'
 
 # Add ListBox Items
@@ -126,7 +131,7 @@ Get-FormVariables
 # RunButton
      
      # Text
-     $WPFRunButton.Content = 'Starta Installationen'
+     $WPFRunButton.Content = 'Start Installation'
      
      # Function   
      $WPFRunButton.Add_Click({
