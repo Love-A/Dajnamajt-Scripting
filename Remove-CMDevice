@@ -1,0 +1,204 @@
+<# 
+.Synopsis
+    Script to remove devies from MECM
+    
+
+.DESCRIPTION
+    A Simple GUI to search for devices in MECM and then remove them
+
+
+.EXAMPLE
+    PS > Set-Organisation.ps1
+
+.NOTES
+
+	    FileName:  Remove-CMDevice.ps1
+	  
+	    Author:  Love Arvidsson
+	
+	    Contact: Love.Arvidsson@norrkoping.se
+	
+	    Created: 2020-06-01
+	
+	    Updated: 
+	
+
+    Version history:
+    
+    1.0 - (2020-06-01) Script created
+ 
+#>
+
+
+# Set Parameters
+
+	[parameter(Mandatory = $true, HelpMessage = "Set your SiteCode eg CM01")]
+	[ValidateNotNullOrEmpty()]
+	[string]$SiteCode,
+
+	[parameter(Mandatory = $true, HelpMessage = "Set the FQDN of your MECM Server eg MECMServer.domain.com")]
+	[ValidateNotNullOrEmpty()]
+	[string]$ProviderMachineName
+
+# Load Pre-req
+    
+    Add-Type -AssemblyName PresentationFramework
+    Add-Type -AssemblyName System.Windows.Forms
+    
+    [void] [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.VisualBasic") 
+
+
+
+        #region Connect to SCCM
+
+        # Customizations
+        $initParams = @{}
+        #$initParams.Add("Verbose", $true) # Uncomment this line to enable verbose logging
+        #$initParams.Add("ErrorAction", "Stop") # Uncomment this line to stop the script on any errors
+
+        # Do not change anything below this line
+
+        # Import the ConfigurationManager.psd1 module 
+        if((Get-Module ConfigurationManager) -eq $null) {
+        Import-Module "$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1" @initParams 
+        }
+
+        # Connect to the site's drive if it is not already present
+        if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+        New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $ProviderMachineName @initParams
+        }
+
+        # Set the current location to be the site code.
+        Set-Location "$($SiteCode):\" @initParams
+
+
+        #endregion Connecto SCCM
+
+
+#===========================================================================
+#region VisualStudio XAML
+#===========================================================================
+$InputXML = @"
+<Window x:Name="Form" x:Class="Get_AD_User.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Get_AD_User"
+        mc:Ignorable="d"
+        Title="Remove CM Device" Height="312" Width="680" WindowStartupLocation="CenterScreen" Topmost="True" ResizeMode="NoResize">
+    <Grid>
+        <TextBox x:Name="DeviceNameBox" Text="Enter DeviceName" TextWrapping="Wrap" Margin="0,0,501,247" TextChanged="TextBox_TextChanged" Width="140" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <ListView x:Name="ListBox" Margin="0,143,0,0">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="100" Header="Name" DisplayMemberBinding ="{Binding 'Name'}"/>
+                    <GridViewColumn Width="100" Header="User" DisplayMemberBinding ="{Binding 'UserName'}"/>
+                    <GridViewColumn Width="135" Header="Current logged on User" DisplayMemberBinding ="{Binding 'CurrentLogonUser'}"/>
+                    <GridViewColumn Width="100" Header="Has Client" DisplayMemberBinding ="{Binding 'IsClient'}"/>
+                    <GridViewColumn Width="100" Header="Domain" DisplayMemberBinding ="{Binding 'Domain'}"/>
+                    <GridViewColumn Width="110" Header="Is Online" DisplayMemberBinding ="{Binding 'CNIsOnline'}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button x:Name="FindDevice" Content="Find Device" Margin="0,0,421,247" Width="75" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+        <Button x:Name="RemoveDevice" Content="Remove Device" Margin="0,0,75,245" Width="92" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+        <Button x:Name="ClearListButton" Content="Clear List" HorizontalAlignment="Left" Margin="264,0,0,247" VerticalAlignment="Bottom" Height="20" Width="71"/>
+        <Label x:Name="SelectDeviceLabel" Content="Select Device" HorizontalAlignment="Right" Margin="0,0,560,138" VerticalAlignment="Bottom" Width="99" FontWeight="Bold"/>
+    </Grid>
+</Window>
+
+
+"@
+
+# Rewrite XAML
+
+    $inputXML = $inputXML -replace '\s{1}[\w\d_-]+="{x:Null}"',''
+    $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+    $inputXML = $inputXML -replace 'TextChanged="[\w\d-]+\w"',''
+    $inputXML = $inputXML -replace 'SelectionChanged="[\w\d-]+\w"',''
+    $inputXML = $inputXML -replace ' Selected="[\w\d-]+\w"',''
+    $inputXML = $inputXML -replace ' Click="[\w\d-]+"',''
+    $inputXML = $inputXML -replace 'Checked="CheckBox_Checked" ',''
+    $inputXML = $inputXML -replace 'Checked="RadioButton_Checked" ',''
+
+    [xml]$xaml = $inputXML
+    $reader = (New-Object System.Xml.XmlNodeReader $xaml)
+    try {
+        $Form = [Windows.Markup.XamlReader]::Load( $reader )
+    }
+    catch {
+        Write-Warning $_.Exception
+        throw
+    }
+    
+    $xaml.SelectNodes("//*[@Name]") | ForEach-Object {
+        try {
+            Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) -ErrorAction Stop
+        }
+        catch {throw}
+    }
+#===========================================================================
+#endregion VS XAML
+#===========================================================================
+
+
+#===========================================================================
+#region Load XAML Objects In PowerShell
+#===========================================================================
+ 
+Function Get-FormVariables{
+if ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
+get-variable WPF*
+}
+ 
+Get-FormVariables
+
+#===========================================================================
+# Element Code
+#===========================================================================
+
+# Import Devices
+
+
+# DevíceNameBox
+    
+    $WPFDeviceNameBox.FontSize = 12
+
+    $WPFDeviceNameBox.Add_GotFocus({
+        if ($WPFDeviceNameBox.Text -eq 'Enter DeviceName'){
+            $WPFDeviceNameBox.Foreground = 'Black'
+            $WPFDeviceNameBox.Text = ''
+        }
+    })
+
+
+# Get Device Info
+
+    $WPFFindDevice.Add_Click({
+    $CMDevice = Get-CMDevice -Name $WPFDeviceNameBox.text | Select-Object name,UserName,IsClient,Domain,CNIsOnline,CurrentLogonUser
+    $WPFListBox.Items.Clear()
+    $WPFListBox.Items.Add($CMDevice)
+    })    
+
+# Clear List
+
+    $WPFClearListButton.Add_Click({
+    $WPFListBox.Items.Clear()
+    })    
+
+# Remove Device
+
+    $WPFRemoveDevice.Add_Click({
+    $msgBoxInput = [System.Windows.MessageBox]::Show('Are your sure you want to remove this device from MECM?','Remove Device','YesNo','Error')
+    switch ($MsgBoxInput){
+        'Yes'{
+            Remove-CMDevice -Name $WPFListBox.SelectedItem.Name -Force
+            $WPFListBox.Items.Clear()
+        }
+      }
+    })
+
+    [void]$Form.ShowDialog()
+    
+   
