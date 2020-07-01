@@ -47,16 +47,21 @@ $InputXML = @"
         Height="560" Width="755" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" Title="Add Networkprinter">
     <Grid Margin="0,0,0,1" UseLayoutRounding="True">
         <Button x:Name="AddPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,65,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
-            <Button.Effect>
-                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
-            </Button.Effect>
-        </Button>
-        <Button x:Name="RemovePrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,412,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
         <Button.Effect>
             <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
         </Button.Effect>
         </Button>
-        <Button x:Name="SetStdPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,320,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+        <Button x:Name="RemovePrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,360,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+        <Button.Effect>
+            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+        </Button.Effect>
+        </Button>
+        <Button x:Name="SetStdPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,300,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+        <Button.Effect>
+            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+        </Button.Effect>
+        </Button>
+        <Button x:Name="PrintTestpage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,420,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
         <Button.Effect>
             <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
         </Button.Effect>
@@ -64,13 +69,13 @@ $InputXML = @"
         <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0"/>
         <Button x:Name="MailTo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="166" Margin="414,497,0,0" Background="White" BorderBrush="Black" FontStyle="Italic" BorderThickness="0" FontWeight="Bold" HorizontalContentAlignment="Left"/>
         <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0"/>
-        <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" ClipToBounds="True" BorderThickness="1">
+        <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="186" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" ClipToBounds="True" BorderThickness="1">
             <ListView.Effect>
                 <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
             </ListView.Effect>
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="450"/>
+                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -79,7 +84,7 @@ $InputXML = @"
 
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="450"/>
+                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -145,6 +150,7 @@ $WPFServiceDeskText.text = 'Need help? Call Servicedesk on 011-xxxxxxx'
 $WPFAddPrinter.Content = 'Add Printer'
 $WPFSetStdPrinter.Content = 'Set as standard printer'
 $WPFRemovePrinter.Content = 'Remove printer'
+$WPFPrintTestPage.Content = 'Print testpage'
 
 #endregion
 #======================================
@@ -236,6 +242,18 @@ $WPFRemovePrinter.Add_Click({
             }
         
 	})
+
+#Print Test Page
+$WPFPrintTestPage.Add_Click({
+        $PrintName = $WPFAddedPrintersBox.SelectedItem.Name
+        $PrinterInstance = [wmi]"\\.\root\cimv2:Win32_Printer.DeviceID='$PrintName'"
+        $PrinterInstance.PrintTestPage()
+        
+        $msgBoxInput = [System.Windows.MessageBox]::Show("Testsida skickad till $PrintName", 'Skriv ut testsida', 'OK')
+
+
+})
+
 #endregion Added Printers
 #======================================
 
