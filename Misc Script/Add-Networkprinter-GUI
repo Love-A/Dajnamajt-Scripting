@@ -44,32 +44,42 @@ $InputXML = @"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Install_Printer"
         mc:Ignorable="d"
-        Title="Add Networkprinter" Height="560" Width="755" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" >
+        Height="560" Width="755" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" Title="Add Networkprinter">
     <Grid Margin="0,0,0,1" UseLayoutRounding="True">
-        <Button x:Name="AddPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,65,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True"/>
-        <Button x:Name="RemovePrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,412,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True"/>
-        <Button x:Name="SetStdPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,320,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True"/>
+        <Button x:Name="AddPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,65,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+            </Button.Effect>
+        </Button>
+        <Button x:Name="RemovePrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,412,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+        <Button.Effect>
+            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+        </Button.Effect>
+        </Button>
+        <Button x:Name="SetStdPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,320,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+        <Button.Effect>
+            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+        </Button.Effect>
+        </Button>
         <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0"/>
         <Button x:Name="MailTo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="166" Margin="414,497,0,0" Background="White" BorderBrush="Black" FontStyle="Italic" BorderThickness="0" FontWeight="Bold" HorizontalContentAlignment="Left"/>
         <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0"/>
-        <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="186" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True">
+        <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" ClipToBounds="True" BorderThickness="1">
             <ListView.Effect>
                 <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
             </ListView.Effect>
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
+                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="450"/>
                 </GridView>
             </ListView.View>
         </ListView>
         <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0"/>
-        <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True">
-            <ListView.Effect>
-                <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
-            </ListView.Effect>
+        <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" BorderThickness="1" ClipToBounds="True">
+
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
+                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="450"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -124,7 +134,7 @@ Get-FormVariables
 #======================================
 #region Standard Parameters
 # Set Printserver eg "Printserver01"
-$Printserver = ""
+$Printserver = "Print7admwin"
 
 # Set TextBox text
 $WPFAvailablePrintersText.Text = 'Available Printers'
@@ -154,12 +164,12 @@ Foreach ($Item in $AvailablePrinter)
 # Install selected printer
 $WPFAddPrinter.Add_Click({
 		$PrinterName = $WPFPrinterBox.SelectedItem.name
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName will be added to your computer", 'Add printer', 'YesNo')
 		Switch ($msgBoxInput)
 		{
 			'Yes'{
 				Add-Printer -ConnectionName \\$Printserver\$PrinterName
-				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName har lagts till på din dator", 'Lägg till skrivare', 'OK')
+				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName has been added", 'Add printer', 'OK')
 			}
 		}
 		
@@ -191,7 +201,7 @@ $WPFSetStdPrinter.Add_Click({
 		$StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
 		$SetStdPrinter = "$StdPrinter"
 		(New-Object -ComObject WScript.Network).SetDefaultPrinter($SetStdPrinter)
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter är nu satt som standardskrivare", 'Standard Skrivare', 'OK')
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter is not set as standard", 'Standard printer', 'OK')
 		Switch ($msgBoxInput)
 		{
 			'OK'{ }
@@ -201,22 +211,30 @@ $WPFSetStdPrinter.Add_Click({
 # Remove selected printer
 $WPFRemovePrinter.Add_Click({
 		$PrintName = $WPFAddedPrintersBox.SelectedItem.Name
-		$msgBoxInput = [System.Windows.MessageBox]::Show("Är du säker på att du vill ta bort $PrintName", 'Ta bort skrivare', 'YesNo')
-		Switch ($msgBoxInput)
-		{
+        If($PrintName -ne 'Fax' -and $PrintName -ne 'Microsoft XPS Document Writer' -And $PrintName -ne 'Microsoft Print to PDF'){
+		$msgBoxInput = [System.Windows.MessageBox]::Show("Are you sure you want to remove $PrintName", 'Remove Printer', 'YesNo')
+		Switch ($msgBoxInput){
 			'yes'{
+                $Cursor = [System.Windows.Forms.Cursors]::WaitCursor
 				$PrintRemove = Get-Printer -name $PrintName
 				Remove-Printer -InputObject $PrintRemove
-				$msgBoxInput = [System.Windows.MessageBox]::Show("Skrivare borttagen", 'Ta bort skrivare', 'OK')
-			}
-		}
-		$WPFAddedPrintersBox.Items.Clear()
-		$AddedPrinters = Get-Printer | Select-Object name
-		Foreach ($Item in $AddedPrinters)
-		{
-			[void]$WPFAddedPrintersBox.Items.Add($Item)
-		}
-		
+				$msgBoxInput = [System.Windows.MessageBox]::Show("Printer Removed", 'Remove Printer', 'OK')
+                $Cursor = [System.Windows.Forms.Cursors]::Default
+			    }
+		    }
+            $Cursor = [System.Windows.Forms.Cursors]::WaitCursor
+		    $WPFAddedPrintersBox.Items.Clear()
+		    $AddedPrinters = Get-Printer | Select-Object name
+		    
+            Foreach ($Item in $AddedPrinters)
+		    {[void]$WPFAddedPrintersBox.Items.Add($Item)}
+	        $Cursor = [System.Windows.Forms.Cursors]::Default
+            }
+        else
+            {
+            $msgBoxInput = [System.Windows.MessageBox]::Show("This printer cannot be removed", 'Remove Printer', 'OK')
+            }
+        
 	})
 #endregion Added Printers
 #======================================
