@@ -249,7 +249,7 @@ $WPFPrintTestPage.Add_Click({
         $PrinterInstance = [wmi]"\\.\root\cimv2:Win32_Printer.DeviceID='$PrintName'"
         $PrinterInstance.PrintTestPage()
         
-        $msgBoxInput = [System.Windows.MessageBox]::Show("Testsida skickad till $PrintName", 'Skriv ut testsida', 'OK')
+        $msgBoxInput = [System.Windows.MessageBox]::Show("Testpage sent to $PrintName", 'Print Testpage', 'OK')
 
 
 })
