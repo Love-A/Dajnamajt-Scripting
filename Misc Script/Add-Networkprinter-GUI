@@ -1,0 +1,225 @@
+<#
+	.SYNOPSIS
+		This application will load available network-printers from a printserver
+	
+	.DESCRIPTION
+		Use this application to load available network-printers and then add, set as standard or remove from from you computer.
+	
+	.PARAMETER Printserver
+		Just add the name of the printserver eg "Printserver01"
+
+    .NOTES
+	    FileName:  Add-Networkprinter.ps1
+	  
+	    Author:  Love Arvidsson
+	
+	    Contact:  Love.Arvidsson@norrkoping.se
+	
+	    Created:   2020-06-30
+	
+	    Updated:
+	
+
+    Version history:
+        
+        1.0 - (2020-06-30) Script Created
+#>
+
+#======================================
+#region Load Pre-req
+
+Add-Type -AssemblyName PresentationFramework
+Add-Type -AssemblyName System.Windows.Forms
+
+#endregion
+#======================================
+
+#======================================
+#region VisualStudio XAML
+$InputXML = @"
+<Window x:Name="MainForm" x:Class="Install_Printer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Install_Printer"
+        mc:Ignorable="d"
+        Title="Add Networkprinter" Height="560" Width="755" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" >
+    <Grid Margin="0,0,0,1" UseLayoutRounding="True">
+        <Button x:Name="AddPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,65,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True"/>
+        <Button x:Name="RemovePrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,412,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True"/>
+        <Button x:Name="SetStdPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,320,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True"/>
+        <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0"/>
+        <Button x:Name="MailTo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="166" Margin="414,497,0,0" Background="White" BorderBrush="Black" FontStyle="Italic" BorderThickness="0" FontWeight="Bold" HorizontalContentAlignment="Left"/>
+        <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0"/>
+        <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="186" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True">
+            <ListView.Effect>
+                <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
+            </ListView.Effect>
+            <ListView.View>
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0"/>
+        <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True">
+            <ListView.Effect>
+                <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
+            </ListView.Effect>
+            <ListView.View>
+                <GridView AllowsColumnReorder="False">
+                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>
+"@
+
+$inputXML = $inputXML -replace '\s{1}[\w\d_-]+="{x:Null}"', ''
+$inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
+$inputXML = $inputXML -replace 'TextChanged="[\w\d-]+\w"', ''
+$inputXML = $inputXML -replace 'SelectionChanged="[\w\d-]+\w"', ''
+$inputXML = $inputXML -replace ' Selected="[\w\d-]+\w"', ''
+$inputXML = $inputXML -replace ' Click="[\w\d-]+"', ''
+$inputXML = $inputXML -replace 'Checked="CheckBox_Checked" ', ''
+$inputXML = $inputXML -replace 'Checked="RadioButton_Checked" ', ''
+
+[xml]$xaml = $inputXML
+$reader = (New-Object System.Xml.XmlNodeReader $xaml)
+try
+{
+	$Form = [Windows.Markup.XamlReader]::Load($reader)
+}
+catch
+{
+	Write-Warning $_.Exception
+	throw
+}
+
+$xaml.SelectNodes("//*[@Name]") | ForEach-Object {
+	try
+	{
+		Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) -ErrorAction Stop
+	}
+	catch { throw }
+}
+#endregion VS XAML
+#======================================
+
+#======================================
+#region Load XAML Objects In PowerShell
+Function Get-FormVariables
+{
+	if ($global:ReadmeDisplay -ne $true) { Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow; $global:ReadmeDisplay = $true }
+	write-host "Found the following interactable elements from our form" -ForegroundColor Cyan
+	get-variable WPF*
+}
+
+Get-FormVariables
+#endregion Load XAML Objects In PowerShell
+#======================================
+
+#======================================
+#region Standard Parameters
+# Set Printserver eg "Printserver01"
+$Printserver = ""
+
+# Set TextBox text
+$WPFAvailablePrintersText.Text = 'Available Printers'
+$WPFAddedPrintersText.Text = 'Installed Printers'
+$WPFServiceDeskText.text = 'Need help? Call Servicedesk on 011-xxxxxxx'
+
+# Set Button Text
+$WPFAddPrinter.Content = 'Add Printer'
+$WPFSetStdPrinter.Content = 'Set as standard printer'
+$WPFRemovePrinter.Content = 'Remove printer'
+
+#endregion
+#======================================
+
+#======================================
+#region Available Printers
+
+# Get Available printers.
+$AvailablePrinter = get-printer -computername $Printserver | Select-Object Name
+
+# Add printers to ListBox
+Foreach ($Item in $AvailablePrinter)
+{
+	[void]$WPFPrinterBox.Items.add($Item)
+}
+
+# Install selected printer
+$WPFAddPrinter.Add_Click({
+		$PrinterName = $WPFPrinterBox.SelectedItem.name
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
+		Switch ($msgBoxInput)
+		{
+			'Yes'{
+				Add-Printer -ConnectionName \\$Printserver\$PrinterName
+				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName har lagts till på din dator", 'Lägg till skrivare', 'OK')
+			}
+		}
+		
+		$WPFAddedPrintersBox.Items.Clear()
+		$AddedPrinters = Get-Printer | Select-Object name
+		Foreach ($Item in $AddedPrinters)
+		{
+			[void]$WPFAddedPrintersBox.Items.Add($Item)
+		}
+		
+	})
+#endregion Availabel Printers
+#======================================
+
+#======================================
+#region Added Printers
+
+# Get Added printers
+$AddedPrinters = Get-Printer | Select-Object name
+
+# Add Added printers to ListBox
+Foreach ($Item in $AddedPrinters)
+{
+	[void]$WPFAddedPrintersBox.Items.Add($Item)
+}
+
+# Set selected printer as standard
+$WPFSetStdPrinter.Add_Click({
+		$StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
+		$SetStdPrinter = "$StdPrinter"
+		(New-Object -ComObject WScript.Network).SetDefaultPrinter($SetStdPrinter)
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter är nu satt som standardskrivare", 'Standard Skrivare', 'OK')
+		Switch ($msgBoxInput)
+		{
+			'OK'{ }
+		}
+	})
+
+# Remove selected printer
+$WPFRemovePrinter.Add_Click({
+		$PrintName = $WPFAddedPrintersBox.SelectedItem.Name
+		$msgBoxInput = [System.Windows.MessageBox]::Show("Är du säker på att du vill ta bort $PrintName", 'Ta bort skrivare', 'YesNo')
+		Switch ($msgBoxInput)
+		{
+			'yes'{
+				$PrintRemove = Get-Printer -name $PrintName
+				Remove-Printer -InputObject $PrintRemove
+				$msgBoxInput = [System.Windows.MessageBox]::Show("Skrivare borttagen", 'Ta bort skrivare', 'OK')
+			}
+		}
+		$WPFAddedPrintersBox.Items.Clear()
+		$AddedPrinters = Get-Printer | Select-Object name
+		Foreach ($Item in $AddedPrinters)
+		{
+			[void]$WPFAddedPrintersBox.Items.Add($Item)
+		}
+		
+	})
+#endregion Added Printers
+#======================================
+
+# Load Form
+[void]$Form.ShowDialog()
