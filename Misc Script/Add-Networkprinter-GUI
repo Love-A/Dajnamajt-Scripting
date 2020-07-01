@@ -134,7 +134,7 @@ Get-FormVariables
 #======================================
 #region Standard Parameters
 # Set Printserver eg "Printserver01"
-$Printserver = "Print7admwin"
+$Printserver = ""
 
 # Set TextBox text
 $WPFAvailablePrintersText.Text = 'Available Printers'
