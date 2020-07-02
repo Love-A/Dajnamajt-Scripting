@@ -44,27 +44,32 @@ $InputXML = @"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Install_Printer"
         mc:Ignorable="d"
-        Height="560" Width="755" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" Title="Add Networkprinter">
+        Height="560" Width="755" Topmost="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" UseLayoutRounding="True" Title="Add Printer">
     <Grid Margin="0,0,0,1" UseLayoutRounding="True">
-        <Button x:Name="AddPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,65,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
-        <Button.Effect>
-            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
-        </Button.Effect>
+        <Button x:Name="AddPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,60,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+            </Button.Effect>
         </Button>
         <Button x:Name="RemovePrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,360,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
-        <Button.Effect>
-            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
-        </Button.Effect>
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+            </Button.Effect>
         </Button>
         <Button x:Name="SetStdPrinter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,300,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
-        <Button.Effect>
-            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
-        </Button.Effect>
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+            </Button.Effect>
         </Button>
         <Button x:Name="PrintTestpage" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,420,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
-        <Button.Effect>
-            <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
-        </Button.Effect>
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+            </Button.Effect>
+        </Button>
+        <Button x:Name="UpdateList" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="565,120,0,0" Height="30" FontWeight="Bold" UseLayoutRounding="True">
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
+            </Button.Effect>
         </Button>
         <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0"/>
         <Button x:Name="MailTo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="166" Margin="414,497,0,0" Background="White" BorderBrush="Black" FontStyle="Italic" BorderThickness="0" FontWeight="Bold" HorizontalContentAlignment="Left"/>
@@ -81,7 +86,6 @@ $InputXML = @"
         </ListView>
         <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0"/>
         <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" BorderThickness="1" ClipToBounds="True">
-
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
                     <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
@@ -151,6 +155,7 @@ $WPFAddPrinter.Content = 'Add Printer'
 $WPFSetStdPrinter.Content = 'Set as standard printer'
 $WPFRemovePrinter.Content = 'Remove printer'
 $WPFPrintTestPage.Content = 'Print testpage'
+$WPFUpdateList.Content = 'Update List'
 
 #endregion
 #======================================
@@ -159,13 +164,7 @@ $WPFPrintTestPage.Content = 'Print testpage'
 #region Available Printers
 
 # Get Available printers.
-$AvailablePrinter = get-printer -computername $Printserver | Select-Object Name
-
-# Add printers to ListBox
-Foreach ($Item in $AvailablePrinter)
-{
-	[void]$WPFPrinterBox.Items.add($Item)
-}
+$WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object | Select-Object Name 
 
 # Install selected printer
 $WPFAddPrinter.Add_Click({
@@ -175,18 +174,30 @@ $WPFAddPrinter.Add_Click({
 		{
 			'Yes'{
 				Add-Printer -ConnectionName \\$Printserver\$PrinterName
-				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName has been added", 'Add printer', 'OK')
+				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName as been added to your computer", 'Add printer', 'OK')
+                [System.Windows.Forms.Cursors]::Default
 			}
 		}
-		
-		$WPFAddedPrintersBox.Items.Clear()
-		$AddedPrinters = Get-Printer | Select-Object name
-		Foreach ($Item in $AddedPrinters)
-		{
-			[void]$WPFAddedPrintersBox.Items.Add($Item)
-		}
-		
+		$WPFAddedPrintersBox.Clear()
+        $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object       
 	})
+
+
+#Update list
+$WPFUpdateList.Add_click({
+Get-WmiObject Win32_LogonSession | Where-Object {$_.AuthenticationPackage -eq 'Kerberos'} | ForEach-Object {klist.exe purge}
+    Invoke-Command{
+    $cmd1 = "cmd.exe"
+    $arg1 = "/c"
+    $arg2 = "gpupdate /target:user /force /wait:0"
+    &$cmd1 $arg1 $arg2
+    }
+
+$WPFPrinterBox.Clear()
+$WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object | Select-Object Name
+
+})
+
 #endregion Availabel Printers
 #======================================
 
@@ -194,20 +205,14 @@ $WPFAddPrinter.Add_Click({
 #region Added Printers
 
 # Get Added printers
-$AddedPrinters = Get-Printer | Select-Object name
-
-# Add Added printers to ListBox
-Foreach ($Item in $AddedPrinters)
-{
-	[void]$WPFAddedPrintersBox.Items.Add($Item)
-}
+$WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
 
 # Set selected printer as standard
 $WPFSetStdPrinter.Add_Click({
 		$StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
 		$SetStdPrinter = "$StdPrinter"
 		(New-Object -ComObject WScript.Network).SetDefaultPrinter($SetStdPrinter)
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter is not set as standard", 'Standard printer', 'OK')
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter is now set as the standard printer", 'Standard printer', 'OK')
 		Switch ($msgBoxInput)
 		{
 			'OK'{ }
@@ -218,30 +223,22 @@ $WPFSetStdPrinter.Add_Click({
 $WPFRemovePrinter.Add_Click({
 		$PrintName = $WPFAddedPrintersBox.SelectedItem.Name
         If($PrintName -ne 'Fax' -and $PrintName -ne 'Microsoft XPS Document Writer' -And $PrintName -ne 'Microsoft Print to PDF'){
-		$msgBoxInput = [System.Windows.MessageBox]::Show("Are you sure you want to remove $PrintName", 'Remove Printer', 'YesNo')
+		$msgBoxInput = [System.Windows.MessageBox]::Show("Are you sure you want to remove $PrintName", 'Remove printer', 'YesNo')
 		Switch ($msgBoxInput){
 			'yes'{
-                $Cursor = [System.Windows.Forms.Cursors]::WaitCursor
 				$PrintRemove = Get-Printer -name $PrintName
 				Remove-Printer -InputObject $PrintRemove
-				$msgBoxInput = [System.Windows.MessageBox]::Show("Printer Removed", 'Remove Printer', 'OK')
-                $Cursor = [System.Windows.Forms.Cursors]::Default
+				$msgBoxInput = [System.Windows.MessageBox]::Show("Printer has been removed", 'Remove printer', 'OK')
 			    }
 		    }
-            $Cursor = [System.Windows.Forms.Cursors]::WaitCursor
-		    $WPFAddedPrintersBox.Items.Clear()
-		    $AddedPrinters = Get-Printer | Select-Object name
-		    
-            Foreach ($Item in $AddedPrinters)
-		    {[void]$WPFAddedPrintersBox.Items.Add($Item)}
-	        $Cursor = [System.Windows.Forms.Cursors]::Default
+		    $WPFAddedPrintersBox.Clear()
+		    $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object 
             }
         else
-            {
-            $msgBoxInput = [System.Windows.MessageBox]::Show("This printer cannot be removed", 'Remove Printer', 'OK')
-            }
+        {$msgBoxInput = [System.Windows.MessageBox]::Show("This printer can not be removed", 'Remove printer', 'OK')}
         
 	})
+
 
 #Print Test Page
 $WPFPrintTestPage.Add_Click({
@@ -249,7 +246,7 @@ $WPFPrintTestPage.Add_Click({
         $PrinterInstance = [wmi]"\\.\root\cimv2:Win32_Printer.DeviceID='$PrintName'"
         $PrinterInstance.PrintTestPage()
         
-        $msgBoxInput = [System.Windows.MessageBox]::Show("Testpage sent to $PrintName", 'Print Testpage', 'OK')
+        $msgBoxInput = [System.Windows.MessageBox]::Show("Testpage has been sent to $PrintName", 'Print testpage', 'OK')
 
 
 })
