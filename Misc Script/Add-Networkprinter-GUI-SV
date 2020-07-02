@@ -156,26 +156,26 @@ $WPFPrinterBox.AddHandler([System.Windows.Controls.GridViewColumnHeader]::ClickE
 
 #region Standard Parameters
 # Set Printserver eg "Printserver01"
-$Printserver = ""
+	$Printserver = ""
 
 # Set TextBox text
-$WPFAvailablePrintersText.Text = 'Tillgängliga skrivare - Markera den skrivare du vill lägga till och klicka sedan på "Lägg till skrivare"'
-$WPFAddedPrintersText.Text = 'Redan tillagda skrivare - Markera den skrivare du vill ta bort eller ange som standardskrivare'
-$WPFServiceDeskText.text = 'Behöver du hjälp? Kontakta servicedesk på telefon 011-***** eller via epost'
+	$WPFAvailablePrintersText.Text = 'Tillgängliga skrivare - Markera den skrivare du vill lägga till och klicka sedan på "Lägg till skrivare"'
+	$WPFAddedPrintersText.Text = 'Redan tillagda skrivare - Markera den skrivare du vill ta bort eller ange som standardskrivare'
+	$WPFServiceDeskText.text = 'Behöver du hjälp? Kontakta servicedesk på telefon 011-***** eller via epost'
 
 # Set Button Text
-$WPFAddPrinter.Content = 'Lägg till skrivare'
-$WPFSetStdPrinter.Content = 'Ange standardskrivare'
-$WPFRemovePrinter.Content = 'Ta bort skrivare'
-$WPFPrintTestPage.Content = 'Skriv ut testsida'
-$WPFUpdateList.Content = 'Uppdatera Lista'
+	$WPFAddPrinter.Content = 'Lägg till skrivare'
+	$WPFSetStdPrinter.Content = 'Ange standardskrivare'
+	$WPFRemovePrinter.Content = 'Ta bort skrivare'
+	$WPFPrintTestPage.Content = 'Skriv ut testsida'
+	$WPFUpdateList.Content = 'Uppdatera Lista'
 
 #Protected Printers
-$ProtectedPrinters = (
-"Fax",
-"Microsoft XPS Document Writer",
-"Microsoft Print to PDF"
-)
+	$ProtectedPrinters = (
+	"Fax",
+	"Microsoft XPS Document Writer",
+	"Microsoft Print to PDF"
+	)
 
 #endregion
 #======================================
@@ -184,36 +184,35 @@ $ProtectedPrinters = (
 #region Available Printers
 
 # Get Available printers.
-$WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object | Select-Object Name 
+$WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object
 
 # Install selected printer
 $WPFAddPrinter.Add_Click({
 		$PrinterName = $WPFPrinterBox.SelectedItem.name
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
-		Switch ($msgBoxInput)
-		{
-			'Yes'{
-				Add-Printer -ConnectionName \\$Printserver\$PrinterName
-				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName har lagts till på din dator", 'Lägg till skrivare', 'OK')
-			}
-		}
-		$WPFAddedPrintersBox.Clear()
-        $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object       
+		    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
+		        Switch ($msgBoxInput){
+			        'Yes'{
+				        Add-Printer -ConnectionName \\$Printserver\$PrinterName
+				        $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName har lagts till på din dator", 'Lägg till skrivare', 'OK')
+			            }
+		            }
+		    $WPFAddedPrintersBox.Clear()
+            $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object       
 	})
 
 
 #Update list
 $WPFUpdateList.Add_click({
-Get-WmiObject Win32_LogonSession | Where-Object {$_.AuthenticationPackage -eq 'Kerberos'} | ForEach-Object {klist.exe purge}
-    Invoke-Command{
-    $cmd1 = "cmd.exe"
-    $arg1 = "/c"
-    $arg2 = "gpupdate /target:user /force /wait:0"
-    &$cmd1 $arg1 $arg2
-    }
+    Get-WmiObject Win32_LogonSession | Where-Object {$_.AuthenticationPackage -eq 'Kerberos'} | ForEach-Object {klist.exe purge}
+        Invoke-Command{
+            $cmd1 = "cmd.exe"
+            $arg1 = "/c"
+            $arg2 = "gpupdate /target:user /force /wait:0"
+            &$cmd1 $arg1 $arg2
+        }
 
-$WPFPrinterBox.Clear()
-$WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object | Select-Object Name
+    $WPFPrinterBox.Clear()
+    $WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object | Select-Object Name
 
 })
 
@@ -229,45 +228,42 @@ $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
 # Set selected printer as standard
 $WPFSetStdPrinter.Add_Click({
         $StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
-        $SetStdPrinter = $StdPrinter.Replace("\\$Printserver\","")
-        $printer = Get-CimInstance -Class Win32_Printer -Filter "ShareName='$SetStdPrinter'"
-        Invoke-CimMethod -InputObject $printer -MethodName SetDefaultPrinter
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$SetStdPrinter är nu satt som standardskrivare", 'Standard Skrivare', 'OK')
-		Switch ($msgBoxInput)
-		{
-			'OK'{ }
-		}
+            $SetStdPrinter = $StdPrinter -Replace [RegEx]::Escape("\\$Printserver\")
+                $printer = Get-CimInstance -Class Win32_Printer -Filter "ShareName='$SetStdPrinter'"
+                    Invoke-CimMethod -InputObject $printer -MethodName SetDefaultPrinter
+		                $msgBoxInput = [System.Windows.MessageBox]::Show("$SetStdPrinter är nu satt som standardskrivare", 'Standard Skrivare', 'OK')
+		                    Switch ($msgBoxInput){
+			                    'OK'{}
+		                    }
 	})
-
 
 # Remove selected printer
 $WPFRemovePrinter.Add_Click({
 		$PrintName = $WPFAddedPrintersBox.SelectedItem.Name
-        	If($PrintName -notin $ProtectedPrinters){
-		$msgBoxInput = [System.Windows.MessageBox]::Show("Är du säker på att du vill ta bort $PrintName", 'Ta bort skrivare', 'YesNo')
-		Switch ($msgBoxInput){
-			'yes'{
-				$PrintRemove = Get-Printer -name $PrintName
-				Remove-Printer -InputObject $PrintRemove
-				$msgBoxInput = [System.Windows.MessageBox]::Show("Skrivare borttagen", 'Ta bort skrivare', 'OK')
-			    }
-		    }
-		    $WPFAddedPrintersBox.Clear()
-		    $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object 
+            If($PrintName -notin $ProtectedPrinters){
+		        $msgBoxInput = [System.Windows.MessageBox]::Show("Är du säker på att du vill ta bort $PrintName", 'Ta bort skrivare', 'YesNo')
+		            Switch ($msgBoxInput){
+			            'yes'{
+				            $PrintRemove = Get-Printer -name $PrintName
+				            Remove-Printer -InputObject $PrintRemove
+				            $msgBoxInput = [System.Windows.MessageBox]::Show("Skrivare borttagen", 'Ta bort skrivare', 'OK')
+			                }
+		                }
+		            $WPFAddedPrintersBox.Clear()
+		            $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object 
+                }
+            else{
+                $msgBoxInput = [System.Windows.MessageBox]::Show("Denna skrivare går inte att ta bort", 'Ta bort skrivare', 'OK')
             }
-        else
-        {$msgBoxInput = [System.Windows.MessageBox]::Show("Denna skrivare går inte att ta bort", 'Ta bort skrivare', 'OK')}
-        
 	})
 
 
 #Print Test Page
 $WPFPrintTestPage.Add_Click({
         $PrintName = $WPFAddedPrintersBox.SelectedItem.Name
-        $PrinterInstance = [wmi]"\\.\root\cimv2:Win32_Printer.DeviceID='$PrintName'"
-        $PrinterInstance.PrintTestPage()
-        
-        $msgBoxInput = [System.Windows.MessageBox]::Show("Testsida skickad till $PrintName", 'Skriv ut testsida', 'OK')
+            $PrinterInstance = [wmi]"\\.\root\cimv2:Win32_Printer.DeviceID='$PrintName'"
+                $PrinterInstance.PrintTestPage()
+                    $msgBoxInput = [System.Windows.MessageBox]::Show("Testsida skickad till $PrintName", 'Skriv ut testsida', 'OK')
 
 
 })
