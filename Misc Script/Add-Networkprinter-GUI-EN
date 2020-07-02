@@ -175,7 +175,6 @@ $WPFAddPrinter.Add_Click({
 			'Yes'{
 				Add-Printer -ConnectionName \\$Printserver\$PrinterName
 				$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName as been added to your computer", 'Add printer', 'OK')
-                [System.Windows.Forms.Cursors]::Default
 			}
 		}
 		$WPFAddedPrintersBox.Clear()
