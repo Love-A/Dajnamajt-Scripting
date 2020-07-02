@@ -209,15 +209,17 @@ $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
 
 # Set selected printer as standard
 $WPFSetStdPrinter.Add_Click({
-		$StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
-		$SetStdPrinter = "$StdPrinter"
-		(New-Object -ComObject WScript.Network).SetDefaultPrinter($SetStdPrinter)
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter is now set as the standard printer", 'Standard printer', 'OK')
+        $StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
+        $SetStdPrinter = $StdPrinter.Replace("\\$Printserver\","")
+        $printer = Get-CimInstance -Class Win32_Printer -Filter "ShareName='$SetStdPrinter'"
+        Invoke-CimMethod -InputObject $printer -MethodName SetDefaultPrinter
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$SetStdPrinter är nu satt som standardskrivare", 'Standard Skrivare', 'OK')
 		Switch ($msgBoxInput)
 		{
 			'OK'{ }
 		}
 	})
+
 
 # Remove selected printer
 $WPFRemovePrinter.Add_Click({
