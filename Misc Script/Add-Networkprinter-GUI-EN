@@ -157,6 +157,13 @@ $WPFRemovePrinter.Content = 'Remove printer'
 $WPFPrintTestPage.Content = 'Print testpage'
 $WPFUpdateList.Content = 'Update List'
 
+#Protected Printers
+$ProtectedPrinters = (
+"Fax",
+"Microsoft XPS Document Writer",
+"Microsoft Print to PDF"
+)
+
 #endregion
 #======================================
 
@@ -223,7 +230,7 @@ $WPFSetStdPrinter.Add_Click({
 # Remove selected printer
 $WPFRemovePrinter.Add_Click({
 		$PrintName = $WPFAddedPrintersBox.SelectedItem.Name
-        If($PrintName -ne 'Fax' -and $PrintName -ne 'Microsoft XPS Document Writer' -And $PrintName -ne 'Microsoft Print to PDF'){
+        	If($PrintName -notin $ProtectedPrinters){
 		$msgBoxInput = [System.Windows.MessageBox]::Show("Are you sure you want to remove $PrintName", 'Remove printer', 'YesNo')
 		Switch ($msgBoxInput){
 			'yes'{
