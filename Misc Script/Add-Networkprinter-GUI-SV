@@ -92,9 +92,6 @@ $InputXML = @"
 </Window>
 "@
 
-#region ListView Handler
-
-
 $inputXML = $inputXML -replace '\s{1}[\w\d_-]+="{x:Null}"', ''
 $inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window'
 $inputXML = $inputXML -replace 'TextChanged="[\w\d-]+\w"', ''
@@ -138,21 +135,6 @@ Function Get-FormVariables
 Get-FormVariables
 #endregion Load XAML Objects In PowerShell
 #======================================
-
-#======================================
-#region Add Handlers
-[Windows.RoutedEventHandler]$evt = 	{
-	$view = [System.Windows.Data.CollectionViewSource]::GetDefaultView($WPFPrinterBox.ItemsSource)
-	$sort = $view.SortDescriptions[0].Direction
-	$direction = if($sort -and 'Descending' -eq $sort){'Ascending'}else{'Descending'}
-	$view.SortDescriptions.Clear()
-	$sortDescription = New-Object System.ComponentModel.SortDescription($_.OriginalSource.Column.Header, $direction)
-	$view.SortDescriptions.Add($sortDescription)
-}
-$WPFPrinterBox.AddHandler([System.Windows.Controls.GridViewColumnHeader]::ClickEvent, $evt)
-
-#endregion ListView Handler
-
 
 #region Standard Parameters
 # Set Printserver eg "Printserver01"
