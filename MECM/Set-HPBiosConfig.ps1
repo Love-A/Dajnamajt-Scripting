@@ -29,6 +29,8 @@
 
 .PARAMETER BCUPath
     Used to define the path to your BiosConfigUtility.exe directory, which should also contain you password.bin and biossettings.txt -files.
+    If you want to use an UNC path you need a "Connect to network Folder" -step ahead of the script step.
+    Map the folder containing all your settingsfiles, BCU utility and PWD file to eg "O:" and then set the -BCUPath parameter to "O:"
 
     For local or package set:
     ".\BiosConfigUtility64.exe"
@@ -37,7 +39,7 @@
     To specify if script is ran in TS or in OS to determine loglocation.
 
 .EXAMPLE 1 When using UNC
-    PS > .\Set-HPBiosConfig.ps1 -BCUPath "\\SCCMSERVER\SOURCES\OSD" -PasswordFile "Password" -DeploymentType "OS"
+    PS > .\Set-HPBiosConfig.ps1 -BCUPath "O:" -PasswordFile "Password" -DeploymentType "OS"
 
 .EXAMPLE 2 Running local or package
     PS > .\Set-HPBiosConfig.ps1 -BCUPath ".\BiosConfigUtility64.exe" -PasswordFile "Password" -DeploymentType "TS"
