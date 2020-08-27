@@ -10,7 +10,7 @@
 
 
 .EXAMPLE
-    PS > Set-Organisation.ps1
+    PS > Remove-CMDevice.ps1
 
 .NOTES
 
