@@ -16,7 +16,7 @@
 	    Contact:  Love.Arvidsson@norrkoping.se
 
 	    Created:   2019-06-20
-
+	s
 	    Updated:
 
 
@@ -62,6 +62,3 @@ Set-Content -Path $output_file -Value $filecontent
 certreq -new $output_file "$($hostname).req"
 certreq -submit -Username DOMAIN\USER -p PASSWORD -PolicyServer "CEP" -config "CES" -attrib "CertificateTemplate:TEMPLATE" "$($hostname).req" "$($hostname).cer"
 certreq -accept "$($hostname).cer"
-
-
-TEST
