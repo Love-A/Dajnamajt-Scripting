@@ -1,7 +1,7 @@
-<# 
+<#
 .Synopsis
     This will set the TSValue 'ORG'
-    
+
 
 .DESCRIPTION
     This is used to set the TSValue 'ORG', used to later in the TS for eg DeviceBranding, specific app installation, or OU transfer.
@@ -17,34 +17,34 @@
 .NOTES
 
 	    FileName:  Set-Organisation.ps1
-	  
+
 	    Author:  Love Arvidsson
-	
+
 	    Contact: Love.Arvidsson@norrkoping.se
-	
-	    Created: 2020-05-20 
-	
-	    Updated: 
-	
+
+	    Created: 2020-05-20
+
+	    Updated:
+
 
     Version history:
-    
+
     1.0 - (2020-05-20) Script created
     2.0 - (2020-07-06) Almost a complete re-write of the script
                         Redesign of GUI
                         Changed how the OrgListView is populated
- 
+
 #>
 
 
 
 #region Load Pre-req
-    
+
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName System.Windows.Forms
 
     [Windows.Forms.Application]::EnableVisualStyles()
-    
+
     # Load TS Env
     $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment
 
@@ -99,7 +99,7 @@ $InputXML = @"
         Write-Warning $_.Exception
         throw
     }
-    
+
     $xaml.SelectNodes("//*[@Name]") | ForEach-Object {
         try {
             Set-Variable -Name "WPF$($_.Name)" -Value $Form.FindName($_.Name) -ErrorAction Stop
@@ -112,12 +112,12 @@ $InputXML = @"
 #region Load XAML Objects In PowerShell
 #===========================================================================
 
- 
+
 Function Get-FormVariables{
 if ($global:ReadmeDisplay -ne $true){Write-host "If you need to reference this display again, run Get-FormVariables" -ForegroundColor Yellow;$global:ReadmeDisplay=$true}
 get-variable WPF*
 }
- 
+
 Get-FormVariables
 
 #===========================================================================
@@ -148,13 +148,18 @@ Get-FormVariables
         $WPFOrgListView.ItemsSource = ($OrgMembers)
 
 # Start installation
-    
-     # Function   
-     $WPFStartInstall.Add_Click({
-        $TSEnvironment.Value("ORG") = $WPFOrgListView.SelectedItem.SetOrg
-        Write-Host $WPFOrgListView.SelectedItem.SetOrg
-            $Form.Close()
-     })
+
+# Function
+$WPFStartInstall.Add_Click({
+   If($WPFOrgListView.SelectedItem.SetOrg -eq $null){
+   $msgBoxInput = [System.Windows.MessageBox]::Show("You need to choose a organisation in order to proceed", 'Choose Organisation', 'OK')
+   }
+   Else{
+   $TSEnvironment.Value("ORG") = $WPFOrgListView.SelectedItem.SetOrg
+   Write-Host $WPFOrgListView.SelectedItem.SetOrg
+       $Form.Close()
+       }
+})
 
 #===========================================================================
 # Shows the form
