@@ -1,3 +1,12 @@
+<#
+If you want to use this script and also update with it, you can add:
+
+"Get-ChildItem "UNCPath to driver" -recurse -filter "*inf" | ForEach-Object {PNPUtil.exe /add-driver $_.FullName /install}""
+At the "update needed" section.
+
+Just download the appropriate drivers from intel, unpack and place them at an network location when clients can reach them.
+
+#>
 
 # Get Wi-Fi NIC properties
 $NetAdapter = get-netadapter -Physical -Name "Wi-Fi" | Select-Object -Property DriverVersion, InterfaceDescription
@@ -31,7 +40,7 @@ $NetAdapter = get-netadapter -Physical -Name "Wi-Fi" | Select-Object -Property D
         $DriverVersion = [Version]::Parse($NetAdapterDriver) -ge [version]::Parse('18.33.13.4')
         }
     }
-        
+
         # Check if NIC update is needed
         Switch($NetAdapterHW){
 
