@@ -81,6 +81,7 @@ $InputXML = @"
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
                     <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
+		    <GridViewColumn Header="Printserver" DisplayMemberBinding ="{Binding 'ComputerName'}" Width="145" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -89,6 +90,7 @@ $InputXML = @"
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
                     <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
+		    <GridViewColumn Header="Printserver" DisplayMemberBinding ="{Binding 'ComputerName'}" Width="145" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -172,21 +174,27 @@ Get-FormVariables
 #region Available Printers
 
 # Get Available printers.
-$WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object
+
+$Printers = ForEach($PrintServer in $PrintServers){
+Get-Printer -ComputerName $PrintServer | Sort-Object
+}
+$WPFPrinterBox.ItemsSource = $Printers 
 
 # Install selected printer
 $WPFAddPrinter.Add_Click({
 		$PrinterName = $WPFPrinterBox.SelectedItem.name
+        $PrintServerName = $WPFPrinterBox.SelectedItem.ComputerName
 		    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName will be added to your computer", 'Add printer', 'YesNo')
 		        Switch ($msgBoxInput){
 			        'Yes'{
-				        Add-Printer -ConnectionName \\$Printserver\$PrinterName
+				        Add-Printer -ConnectionName \\$PrintServerName\$PrinterName
 				        $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName as been added to your computer", 'Add printer', 'OK'))
 			            }
 		            }
 		    $WPFAddedPrintersBox.Clear()
             $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object       
 	})
+
 
 
 #Update list
@@ -200,7 +208,7 @@ $WPFUpdateList.Add_click({
         }
 
     $WPFPrinterBox.Clear()
-    $WPFPrinterBox.ItemsSource = Get-Printer -ComputerName $PrintServer | Sort-Object | Select-Object Name
+    $WPFPrinterBox.ItemsSource = $Printers
 
 })
 
@@ -216,13 +224,14 @@ $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
 # Set selected printer as standard
 $WPFSetStdPrinter.Add_Click({
         $StdPrinter = $WPFAddedPrintersBox.SelectedItem.Name
-            $SetStdPrinter = $StdPrinter -Replace [RegEx]::Escape("\\$Printserver\")
-                $printer = Get-CimInstance -Class Win32_Printer -Filter "ShareName='$SetStdPrinter'"
-                    Invoke-CimMethod -InputObject $printer -MethodName SetDefaultPrinter
-		                $msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter is now set as the standard printer", 'Standard printer', 'OK')
-		                    Switch ($msgBoxInput){
-			                    'OK'{}
-		                    }
+            $StdPrinterServer = $WPFAddedPrintersBox.SelectedItem.ComputerName
+                $SetStdPrinter = $StdPrinter -Replace [RegEx]::Escape("\\$StdPrinterServer\")
+                    $printer = Get-CimInstance -Class Win32_Printer -Filter "ShareName='$SetStdPrinter'"
+                        Invoke-CimMethod -InputObject $printer -MethodName SetDefaultPrinter
+		                    $msgBoxInput = [System.Windows.MessageBox]::Show("$StdPrinter is now set as the standard printer", 'Standard printer', 'OK')
+		                        Switch ($msgBoxInput){
+			                        'OK'{}
+		                        }
 	})
 
 # Remove selected printer
