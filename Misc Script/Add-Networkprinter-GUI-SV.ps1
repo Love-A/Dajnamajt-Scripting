@@ -139,8 +139,8 @@ Get-FormVariables
 #======================================
 
 #region Standard Parameters
-# Set Printserver eg "Printserver01"
-	$Printserver = ""
+# Set Printserver eg "Printserver01","Printserver02"
+	$PrintServers = ""
 
 # Set TextBox text
 	$WPFAvailablePrintersText.Text = 'Tillgängliga skrivare - Markera den skrivare du vill lägga till och klicka sedan på "Lägg till skrivare"'
