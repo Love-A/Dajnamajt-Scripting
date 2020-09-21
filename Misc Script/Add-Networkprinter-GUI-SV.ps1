@@ -71,9 +71,9 @@ $InputXML = @"
                 <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
             </Button.Effect>
         </Button>
-        <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0"/>
+        <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0" IsReadOnly="True"/>
         <Button x:Name="MailTo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="166" Margin="414,497,0,0" Background="White" BorderBrush="Black" FontStyle="Italic" BorderThickness="0" FontWeight="Bold" HorizontalContentAlignment="Left"/>
-        <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0"/>
+        <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0" IsReadOnly="True"/>
         <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="186" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" ClipToBounds="True" BorderThickness="1">
             <ListView.Effect>
                 <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
@@ -85,7 +85,7 @@ $InputXML = @"
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0"/>
+        <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0" IsReadOnly="True"/>
         <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" BorderThickness="1" ClipToBounds="True">
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
