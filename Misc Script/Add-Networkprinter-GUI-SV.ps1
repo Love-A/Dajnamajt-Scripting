@@ -16,6 +16,9 @@
 	    Contact:  Love.Arvidsson@norrkoping.se
 	
 	    Created:   2020-06-30
+	    
+    1.1 --- 2020-09-17 - Added support for multiple printservers.
+    1.0 --- 2020 - Application created
 	
 #>
 
@@ -140,7 +143,9 @@ Get-FormVariables
 
 #region Standard Parameters
 # Set Printserver eg "Printserver01","Printserver02"
-	$PrintServers = ""
+	$PrintServers = @(
+	""
+	)
 
 # Set TextBox text
 	$WPFAvailablePrintersText.Text = 'Tillgängliga skrivare - Markera den skrivare du vill lägga till och klicka sedan på "Lägg till skrivare"'
@@ -177,7 +182,7 @@ $WPFPrinterBox.ItemsSource = $Printers
 # Install selected printer
 $WPFAddPrinter.Add_Click({
 		$PrinterName = $WPFPrinterBox.SelectedItem.name
-        $PrintServerName = $WPFPrinterBox.SelectedItem.ComputerName
+        	$PrintServerName = $WPFPrinterBox.SelectedItem.ComputerName
 		    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
 		        Switch ($msgBoxInput){
 			        'Yes'{
