@@ -21,7 +21,7 @@
 	
 
     Version history:
-        
+    	1.1 - (2020-09-17) Added support for multiple printservers
         1.0 - (2020-06-30) Script Created
 #>
 
