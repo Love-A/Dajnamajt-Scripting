@@ -16,9 +16,10 @@
 	    Contact:  Love.Arvidsson@norrkoping.se
 	
 	    Created:   2020-06-30
-	    
-    1.1 --- 2020-09-17 - Added support for multiple printservers.
-    1.0 --- 2020 - Application created
+	
+	Version History:    
+    	1.1 - (2020-09-17) Added support for multiple printservers
+        1.0 - (2020-06-30) Script Created
 	
 #>
 
