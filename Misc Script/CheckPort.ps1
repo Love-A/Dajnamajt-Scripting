@@ -1,11 +1,11 @@
 ﻿# Set Parameters
 Param(
     [parameter(Mandatory = $true, HelpMessage = "Ange IP eller FQDN till den server som ska testas.")]
-    #[ValidateNotNullOrEmpty()]
+    [ValidateNotNullOrEmpty()]
     [String]$Server = "",
 
     [parameter(Mandatory = $True, HelpMessage = "Ange den Port eller Portar du vill testa.")]
-    #[ValidateNotNullOrEmpty()]
+    [ValidateNotNullOrEmpty()]
     [int[]]$Ports = ""
 )
     # Get Current IPV4 Address
