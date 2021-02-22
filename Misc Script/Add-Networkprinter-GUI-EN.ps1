@@ -21,8 +21,11 @@
 	
 
     Version history:
-    	1.1 - (2020-09-17) Added support for multiple printservers
         1.0 - (2020-06-30) Script Created
+	1.1 - (2020-09-17) Added support for multiple printservers
+	1.2 - (2021-02-22) Added Status and Location tabs
+			Added some error handling for adding and removeing printer
+    			Fixed a bug where i had not taken into account for multiple printservers and updating the "Availible printers list" would only return results from one of the server.
 #>
 
 #======================================
@@ -80,8 +83,10 @@ $InputXML = @"
             </ListView.Effect>
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
-		    <GridViewColumn Header="Printserver" DisplayMemberBinding ="{Binding 'ComputerName'}" Width="145" />
+                    <GridViewColumn Header="Name" DisplayMemberBinding ="{Binding 'Name'}" Width="260"/>
+                    <GridViewColumn Header="Status" DisplayMemberBinding ="{Binding 'PrinterStatus'}" Width="70"/>
+                    <GridViewColumn Header="Server" DisplayMemberBinding ="{Binding 'ComputerName'}" Width="95"/>
+                    <GridViewColumn Header="Location" DisplayMemberBinding ="{Binding 'Location'}" Width="460"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -89,8 +94,8 @@ $InputXML = @"
         <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" BorderThickness="1" ClipToBounds="True">
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
-                    <GridViewColumn Header="Namn" DisplayMemberBinding ="{Binding 'Name'}" Width="350"/>
-		    <GridViewColumn Header="Printserver" DisplayMemberBinding ="{Binding 'ComputerName'}" Width="145" />
+                    <GridViewColumn Header="Name" DisplayMemberBinding ="{Binding 'Name'}" Width="335"/>
+                    <GridViewColumn Header="Status" DisplayMemberBinding ="{Binding 'PrinterStatus'}" Width="70"/>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -180,18 +185,24 @@ Get-FormVariables
 $Printers = ForEach($PrintServer in $PrintServers){
 Get-Printer -ComputerName $PrintServer | Sort-Object
 }
-$WPFPrinterBox.ItemsSource = $Printers 
+$WPFPrinterBox.ItemsSource = $Printers
 
 # Install selected printer
 $WPFAddPrinter.Add_Click({
 		$PrinterName = $WPFPrinterBox.SelectedItem.name
-        $PrintServerName = $WPFPrinterBox.SelectedItem.ComputerName
-		    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName will be added to your computer", 'Add printer', 'YesNo')
+        $Printserver = $WPFPrinterBox.SelectedItem.ComputerName
+		    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
 		        Switch ($msgBoxInput){
-			        'Yes'{
-				        Add-Printer -ConnectionName \\$PrintServerName\$PrinterName
-				        $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName as been added to your computer", 'Add printer', 'OK'))
-			            }
+				'Yes'{ 
+                        	try{
+				    Add-Printer -ConnectionName \\$Printserver\$PrinterName -EA Stop
+				    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName has been added to your computer", 'Add Printer', 'OK')}
+                        	catch{
+				    $msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName Could not be added.", 'Add Printer', 'OK')
+				    $msgBoxInput = [System.Windows.MessageBox]::Show("$_.", 'Add Printer', 'OK')
+				    Break
+				    }
+			    	}
 		            }
 		    $WPFAddedPrintersBox.Clear()
             $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object       
@@ -201,18 +212,23 @@ $WPFAddPrinter.Add_Click({
 
 #Update list
 $WPFUpdateList.Add_click({
-    Get-WmiObject Win32_LogonSession | Where-Object {$_.AuthenticationPackage -eq 'Kerberos'} | ForEach-Object {klist.exe purge}
-        Invoke-Command{
-            $cmd1 = "cmd.exe"
-            $arg1 = "/c"
-            $arg2 = "gpupdate /target:user /force /wait:0"
-            &$cmd1 $arg1 $arg2
-        }
+		Get-WmiObject Win32_LogonSession | Where-Object { $_.AuthenticationPackage -eq 'Kerberos' } | ForEach-Object { klist.exe purge }
+		Invoke-Command{
+			$cmd1 = "cmd.exe"
+			$arg1 = "/c"
+			$arg2 = "gpupdate /target:user /force /wait:0"
+			&$cmd1 $arg1 $arg2
+		}
 
-    $WPFPrinterBox.Clear()
-    $WPFPrinterBox.ItemsSource = $Printers
+		$WPFPrinterBox.Clear()
+		$Printers = ForEach ($PrintServer in $PrintServers)
+		{
+			Get-Printer -ComputerName $PrintServer | Sort-Object
+		}
 
-})
+		$WPFAddedPrintersBox.Clear()
+		$WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
+	})
 
 #endregion Availabel Printers
 #======================================
@@ -239,23 +255,34 @@ $WPFSetStdPrinter.Add_Click({
 # Remove selected printer
 $WPFRemovePrinter.Add_Click({
 		$PrintName = $WPFAddedPrintersBox.SelectedItem.Name
-            If($PrintName -notin $ProtectedPrinters){
-		        $msgBoxInput = [System.Windows.MessageBox]::Show("Are you sure you want to remove $PrintName", 'Remove printer', 'YesNo')
-		            Switch ($msgBoxInput){
-			            'yes'{
-				            $PrintRemove = Get-Printer -name $PrintName
-				            Remove-Printer -InputObject $PrintRemove
-				            $msgBoxInput = [System.Windows.MessageBox]::Show("Printer has been removed", 'Remove printer', 'OK')
-			                }
-		                }
-		            $WPFAddedPrintersBox.Clear()
-		            $WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object 
-                }
-            else{
-                $msgBoxInput = [System.Windows.MessageBox]::Show("This printer can not be removed", 'Remove printer', 'OK')
-            }
+           		If ($PrintName -notin $ProtectedPrinters)
+		{
+			$msgBoxInput = [System.Windows.MessageBox]::Show("Are you sure you want to remove $PrintName", 'Remove Printer', 'YesNo')
+			Switch ($msgBoxInput)
+			{
+				'yes'{
+					Try
+					{
+						$PrintRemove = Get-Printer -name $PrintName
+						Remove-Printer -InputObject $PrintRemove -EA Stop
+					}
+					Catch
+					{
+						$msgBoxInput = [System.Windows.MessageBox]::Show("Could not remove printer", 'Remove printer', 'OK')
+						$msgBoxInput = [System.Windows.MessageBox]::Show("$_", 'Remove Printer', 'OK')
+						Break
+					}
+					$msgBoxInput = [System.Windows.MessageBox]::Show("Printer Removed", 'Remove printer', 'OK')
+				}
+			}
+			$WPFAddedPrintersBox.Clear()
+			$WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
+		}
+		else
+		{
+			$msgBoxInput = [System.Windows.MessageBox]::Show("This printer can not be removed", 'Remove printer', 'OK')
+		}
 	})
-
 
 #Print Test Page
 $WPFPrintTestPage.Add_Click({
