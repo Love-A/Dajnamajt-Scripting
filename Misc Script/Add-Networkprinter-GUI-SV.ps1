@@ -19,7 +19,7 @@
 	
 Update - 2021-02-22
     *Added Status and Location tabs
-    *Added some error handling for adding and removeing printer
+    *Added some error handling for adding and removing printer
     *Fixed a bug where i had not taken into account for multiple printservers and updating the "Availible printers list" would only return results from one of the server.
     
 #>
