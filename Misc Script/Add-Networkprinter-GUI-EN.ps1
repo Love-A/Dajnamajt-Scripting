@@ -13,7 +13,7 @@
 	  
 	    Author:  Love Arvidsson
 	
-	    Contact:  Love.Arvidsson@norrkoping.se
+	    Contact:  Love.Arvidsson@nOutlook.com
 	
 	    Created:   2020-06-30
 	
