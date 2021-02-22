@@ -13,15 +13,16 @@
 	  
 	    Author:  Love Arvidsson
 	
-	    Contact:  Love.Arvidsson@norrkoping.se
+	    Contact:  Love.Arvidsson@Outlook.com
 	
 	    Created:   2020-06-30
-	
-Update - 2021-02-22
-    *Added Status and Location tabs
-    *Added some error handling for adding and removing printer
-    *Fixed a bug where i had not taken into account for multiple printservers and updating the "Availible printers list" would only return results from one of the server.
-    
+	    
+Version history:
+        1.0 - (2020-06-30) Script Created
+	1.1 - (2020-09-17) Added support for multiple printservers
+	1.2 - (2021-02-22) Added Status and Location tabs
+			Added some error handling for adding and removeing printer
+    			Fixed a bug where i had not taken into account for multiple printservers and updating the "Availible printers list" would only return results from one of the server.
 #>
 
 #======================================
@@ -72,9 +73,9 @@ $InputXML = @"
                 <DropShadowEffect BlurRadius="2" ShadowDepth="2" Opacity="0.6"/>
             </Button.Effect>
         </Button>
-        <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0"/>
+        <TextBox x:Name="ServiceDeskText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="405" Margin="10,498,0,0" FontStyle="Italic" BorderThickness="0" IsReadOnly="True"/>
         <Button x:Name="MailTo" HorizontalAlignment="Left" VerticalAlignment="Top" Width="166" Margin="414,497,0,0" Background="White" BorderBrush="Black" FontStyle="Italic" BorderThickness="0" FontWeight="Bold" HorizontalContentAlignment="Left"/>
-        <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0"/>
+        <TextBox x:Name="AvailablePrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="530" Margin="10,11,0,0" BorderThickness="0" IsReadOnly="True"/>
         <ListView x:Name="PrinterBox" HorizontalAlignment="Left" Height="186" VerticalAlignment="Top" Width="525" Margin="10,39,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" ClipToBounds="True" BorderThickness="1">
             <ListView.Effect>
                 <DropShadowEffect BlurRadius="1" Opacity="0.6" ShadowDepth="1"/>
@@ -88,7 +89,7 @@ $InputXML = @"
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0"/>
+        <TextBox x:Name="AddedPrintersText" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="525" Margin="10,257,0,0" BorderThickness="0" IsReadOnly="True"/>
         <ListView x:Name="AddedPrintersBox" HorizontalAlignment="Left" Height="190" VerticalAlignment="Top" Width="525" Margin="10,285,0,0" SelectionMode="Single" Background="#FFFBFBFB" UseLayoutRounding="True" BorderThickness="1" ClipToBounds="True">
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
@@ -156,11 +157,11 @@ $PrintServers = @(
 # Set TextBox text
 $WPFAvailablePrintersText.Text = 'Tillgängliga skrivare - Markera den skrivare du vill lägga till och klicka sedan på "Lägg till skrivare"'
 $WPFAddedPrintersText.Text = 'Redan tillagda skrivare - Markera den skrivare du vill ta bort eller ange som standardskrivare'
-$WPFServiceDeskText.text = 'Behöver du hjälp? Kontakta servicedesk på telefon 011-******* eller via epost'
+$WPFServiceDeskText.text = 'Behöver du hjälp? Kontakta servicedesk på telefon 011-****** eller via epost'
 
 # MailTo
 $WPFMailto.Content = 'MAILADDRESS'
-$WPFMailto.add_Click({ [system.Diagnostics.Process]::start("mailto:MAILADDRESSe") })
+$WPFMailto.add_Click({ [system.Diagnostics.Process]::start("mailto:MAILADDRESS") })
 
 # Set Button Text
 $WPFAddPrinter.Content = 'Lägg till skrivare'
@@ -195,7 +196,7 @@ $WPFPrinterBox.ItemsSource = $Printers
 # Install selected printer
 $WPFAddPrinter.Add_Click({
 		$PrinterName = $WPFPrinterBox.SelectedItem.name
-		$Printserver = $WPFPrinterBox.SelectedItem.ComputerName
+		$PrintServer = $WPFPrinterBox.SelectedItem.ComputerName
 		$msgBoxInput = [System.Windows.MessageBox]::Show("$PrinterName kommer att installeras på din dator", 'Lägg till skrivare', 'YesNo')
 		Switch ($msgBoxInput)
 		{
@@ -216,7 +217,6 @@ $WPFAddPrinter.Add_Click({
 		$WPFAddedPrintersBox.Clear()
 		$WPFAddedPrintersBox.ItemsSource = Get-Printer | Sort-Object
 	})
-
 
 #Update list
 $WPFUpdateList.Add_click({
@@ -254,7 +254,7 @@ $WPFSetStdPrinter.Add_Click({
 		$SetStdPrinter = $StdPrinter -Replace [RegEx]::Escape("\\$StdPrinterServer\")
 		$printer = Get-CimInstance -Class Win32_Printer -Filter "ShareName='$SetStdPrinter'"
 		Invoke-CimMethod -InputObject $printer -MethodName SetDefaultPrinter
-		$msgBoxInput = [System.Windows.MessageBox]::Show("$SetStdPrinter är nu inställd som standardskrivare", 'Standard Skrivare', 'OK')
+		$msgBoxInput = [System.Windows.MessageBox]::Show("$SetStdPrinter är nu satt som standardskrivare", 'Standard Skrivare', 'OK')
 		Switch ($msgBoxInput)
 		{
 			'OK'{ }
@@ -292,7 +292,6 @@ $WPFRemovePrinter.Add_Click({
 			$msgBoxInput = [System.Windows.MessageBox]::Show("Denna skrivare går inte att ta bort", 'Ta bort skrivare', 'OK')
 		}
 	})
-
 
 #Print Test Page
 $WPFPrintTestPage.Add_Click({
