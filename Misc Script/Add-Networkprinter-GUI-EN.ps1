@@ -158,7 +158,11 @@ Get-FormVariables
 # Set TextBox text
     $WPFAvailablePrintersText.Text = 'Available Printers'
     $WPFAddedPrintersText.Text = 'Installed Printers'
-    $WPFServiceDeskText.text = 'Need help? Call Servicedesk on 011-xxxxxxx'
+    $WPFServiceDeskText.text = 'Need help? Call Servicedesk on 011-xxxxxxx or MailTo'
+
+# MailTo
+	$WPFMailto.Content = 'MAILADRESS'
+	$WPFMailto.add_Click({ [system.Diagnostics.Process]::start("mailto:MailAdress") })    
 
 # Set Button Text
     $WPFAddPrinter.Content = 'Add Printer'
