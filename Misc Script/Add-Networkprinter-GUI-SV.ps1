@@ -6,7 +6,7 @@
 		Use this application to load available network-printers and then add, set as standard or remove from from you computer.
 	
 	.PARAMETER Printserver
-		Just add the name of the printserver eg "Printserver01"
+		Just add the name of the printserver eg "Printserver01", and change the MAILTO and phonenumber section for servicedesk contact info
 
     .NOTES
 	    FileName:  Add-Networkprinter.ps1
@@ -21,7 +21,7 @@ Version history:
         1.0 - (2020-06-30) Script Created
 	1.1 - (2020-09-17) Added support for multiple printservers
 	1.2 - (2021-02-22) Added Status and Location tabs
-			Added some error handling for adding and removeing printer
+			Added some error handling for adding and removing printer
     			Fixed a bug where i had not taken into account for multiple printservers and updating the "Availible printers list" would only return results from one of the server.
 #>
 
