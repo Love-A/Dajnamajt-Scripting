@@ -27,7 +27,7 @@
     ".\"
 
 .EXAMPLE 1 When using UNC
-    PS > .\Set-HPBiosConfig.ps1 -BCUPath "O:" -PasswordFile "Password" -DeploymentType "OS"
+    PS > .\Set-HPBiosConfig.ps1 -BCUPath "O:" -PasswordFile "Password"
 .EXAMPLE 2 Running local or package
     PS > .\Set-HPBiosConfig.ps1 -BCUPath ".\" -PasswordFile "Password"
 #>
