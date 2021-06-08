@@ -2,7 +2,7 @@
 <exitcodes>
 	<exit0>Success - Opertation Successfull.</exit0>
 	<exit1>Not Supported - WmI result code - Setting is not supported on system.</exit1>
-	<exit2>Unknows - WmI result code - Operation failed for unknown reason.</exit2>
+	<exit2>Unknown - WmI result code - Operation failed for unknown reason.</exit2>
 	<exit3>Timeout - WmI result code - Operation timed out.</exit3>
 	<exit4>Failed - WmI result code - Operation failed.</exit4>
 	<exit5>Invalid Parameter - WmI result code - A parameter is missing or wrong type.</exit5>
