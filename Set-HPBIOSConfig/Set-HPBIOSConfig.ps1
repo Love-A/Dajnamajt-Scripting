@@ -1,5 +1,5 @@
 <#.DESCRIPTION
-    This will use the gathered BIOS config file from HP BiosConfigUtility and set your systems BIOS preferences.
+    This will use the gathered BIOS config file from HP BiosConfigUtility and set your systems BIOS preferences. A BIOS Settings file can have .REPSET or .txt filextension, if you use .txt be sure to edit the script at Line 61
     Make sure your settings file is named the same as your Win32_ComputerSystem property Model, eg "HP ZBook 15 G4.REPSET" as the script will call this WMI Class to match up with a settigsfile.
     
     Script expects these files to be in the same directory as BiosConfigUtility64.exe :
@@ -20,7 +20,7 @@
     eg "password"
 
 .PARAMETER BCUPath
-    Used to define the path to your BiosConfigUtility.exe directory, which should also contain you password.bin and biossettings.txt -files.
+    Used to define the path to your BiosConfigUtility.exe directory, which should also contain you password.bin, biossettings.REPSET and BCU_ExitCodes.xml -files.
     If you want to use an UNC path you need a "Connect to network Folder" -step ahead of the script step.
     Map the folder containing all your settingsfiles, BCU utility and PWD file to eg "O:" and then set the -BCUPath parameter to "O:"
     For local or package set:
