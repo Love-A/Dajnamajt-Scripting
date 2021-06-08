@@ -24,7 +24,7 @@
     If you want to use an UNC path you need a "Connect to network Folder" -step ahead of the script step.
     Map the folder containing all your settingsfiles, BCU utility and PWD file to eg "O:" and then set the -BCUPath parameter to "O:"
     For local or package set:
-    ".\BiosConfigUtility64.exe"
+    ".\"
 
 .EXAMPLE 1 When using UNC
     PS > .\Set-HPBiosConfig.ps1 -BCUPath "O:" -PasswordFile "Password" -DeploymentType "OS"
