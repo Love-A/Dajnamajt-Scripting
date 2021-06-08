@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<exitcodes>
+	<exit0>Opertation Successfull.</exit0>
+	<exit1>WmI result code - Setting is not supported on system.</exit1>
+	<exit2>WmI result code - Operation failed for unknown reason.</exit2>
+	<exit3>WmI result code - Operation timed out.</exit3>
+	<exit4>WmI result code - Operation failed.</exit4>
+	<exit5>WmI result code - A parameter is missing or wrong type.</exit5>
+	<exit6>WmI result code - Setting modification failed due to BIOS permissions.</exit6>
+	<exit10>Valid password not provided</exit10>
+	<exit11>BcU was unable to locate the configuration file or unable to read the file at the specified path.</exit11>
+	<exit12>First line in the configuration file must be the word “BIOSconfig” followed by the file format version, currently “1.0”.</exit12>
+	<exit13>BcU failed to change one or more settings. Use /verbose or /WarningAserr to get status per setting.</exit13>
+	<exit14>BcU not ready to write file.</exit14>
+	<exit15>commandline syntax error.</exit15>
+	<exit16>Unable to write to file or system. BcU was unable to connect to HP BIOS WmI. WmI classes are corruptedor the system is not supported.</exit16>
+	<exit17>Help is invoked.</exit17>
+	<exit18>Setting is unchanged.</exit18>
+	<exit20>Invalid setting name.</exit20>
+	<exit21>Invalid setting value.</exit21>
+	<exit22>Unable to connect to HP BIOS WmI namespace.</exit22>
+	<exit23>Unable to connect to HP WmI namespace</exit23>
+	<exit24>Unable to connect to PUBLIc WmI namespace</exit24>
+	<exit25>Password file error.</exit25>
+	<exit30>Password is not F10 compatible.</exit30>
+	<exit31>Platform does not support Unicodepasswords</exit31>
+	<exit32>No settings to apply found in config file.</exit32>
+	<exit33>missing parameter. BcU_OneTime_Not_Found.</exit33>
+	<exit35>missing parameter. BcU_AntiReplayValue_Not_Found.</exit35>
+	<exit36>missing parameter. BcU_PrivateKey_Not_Found.</exit36>
+	<exit37>corrupt or missing file. BcU_Unable_LoadDll_BcUsignature.</exit37>
+	<exit38>BcU_Unable_Getclass_entry.</exit38>
+	<exit39>BcU_Unable_Getclass_Point</exit39>
+	<exit40>Invalid UID. Invalid Universal Unique Identifier.</exit40>
+	<exit41>Invalid UID. Invalid Universal Unique Identifier.</exit41>
+</exitcodes>
