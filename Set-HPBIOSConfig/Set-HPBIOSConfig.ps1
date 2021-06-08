@@ -33,7 +33,7 @@
 .EXAMPLE 1 When using UNC
     PS > .\Set-HPBiosConfig.ps1 -BCUPath "O:" -PasswordFile "Password" -DeploymentType "OS"
 .EXAMPLE 2 Running local or package
-    PS > .\Set-HPBiosConfig.ps1 -BCUPath ".\BiosConfigUtility64.exe" -PasswordFile "Password" -DeploymentType "TS"
+    PS > .\Set-HPBiosConfig.ps1 -BCUPath ".\BiosConfigUtility64.exe" -PasswordFile "Password"
 #>
 param (
     [Parameter(Mandatory = $True)]
