@@ -2,7 +2,7 @@
 <exitcodes>
 	<exit0>Success - Opertation Successfull.</exit0>
 	<exit1>Not Supported - WmI result code - Setting is not supported on system.</exit1>
-	<exit2>Unknown - WmI result code - Operation failed for unknown reason.</exit2>
+	<exit2>Unknows - WmI result code - Operation failed for unknown reason.</exit2>
 	<exit3>Timeout - WmI result code - Operation timed out.</exit3>
 	<exit4>Failed - WmI result code - Operation failed.</exit4>
 	<exit5>Invalid Parameter - WmI result code - A parameter is missing or wrong type.</exit5>
@@ -22,15 +22,15 @@
 	<exit22>Unable to connect to HP BIOS WmI namespace.</exit22>
 	<exit23>Unable to connect to HP WmI namespace</exit23>
 	<exit24>Unable to connect to PUBLIc WmI namespace</exit24>
-	<exit30>Password file error.</exit25>
-	<exit31>Password is not F10 compatible.</exit30>
-	<exit32>Platform does not support Unicodepasswords</exit31>
-	<exit33>No settings to apply found in config file.</exit32>
-	<exit35>missing parameter. BcU_OneTime_Not_Found.</exit33>
-	<exit36>missing parameter. BcU_AntiReplayValue_Not_Found.</exit35>
-	<exit37>missing parameter. BcU_PrivateKey_Not_Found.</exit36>
-	<exit38>corrupt or missing file. BcU_Unable_LoadDll_BcUsignature.</exit37>
-	<exit39>BcU_Unable_Getclass_entry.</exit38>
-	<exit40>BcU_Unable_Getclass_Point</exit39>
-	<exit41>Invalid UID. Invalid Universal Unique Identifier.</exit40>
+	<exit30>Password file error.</exit30>
+	<exit31>Password is not F10 compatible.</exit31>
+	<exit32>Platform does not support Unicodepasswords</exit32>
+	<exit33>No settings to apply found in config file.</exit33>
+	<exit35>missing parameter. BcU_OneTime_Not_Found.</exit35>
+	<exit36>missing parameter. BcU_AntiReplayValue_Not_Found.</exit36>
+	<exit37>missing parameter. BcU_PrivateKey_Not_Found.</exit37>
+	<exit38>corrupt or missing file. BcU_Unable_LoadDll_BcUsignature.</exit38>
+	<exit39>BcU_Unable_Getclass_entry.</exit39>
+	<exit40>BcU_Unable_Getclass_Point</exit40>
+	<exit41>Invalid UID. Invalid Universal Unique Identifier.</exit41>
 </exitcodes>
