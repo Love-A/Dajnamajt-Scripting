@@ -10,6 +10,7 @@
         Passwordfile.bin
         BiosConfigUtility64.exe
         BIOSSettings.txt
+	BCU_ExitCodes.xml
 
     Can be made into a package and ran through TS or as application, or even better is to place it on a share accessible from clients, then you wont have to update the package/application-files when making changes in settingsfiles or adding new ones.
     When running this from a UNC-path, you have to do this post your Apply Networksettings -step, as the TS is run in SYSTEM context.
