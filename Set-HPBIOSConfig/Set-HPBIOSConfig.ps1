@@ -1,6 +1,6 @@
 <#.DESCRIPTION
     This will use the gathered BIOS config file from HP BiosConfigUtility and set your systems BIOS preferences.
-    Make sure your settings file is named the same as your Win32_ComputerSystem property Model, eg "HP ZBook 15 G4.txt" as the script will call this WMI Class to match up with a settigsfile.
+    Make sure your settings file is named the same as your Win32_ComputerSystem property Model, eg "HP ZBook 15 G4.REPSET" as the script will call this WMI Class to match up with a settigsfile.
     
     Script expects these files to be in the same directory as BiosConfigUtility64.exe :
         Passwordfile.bin
