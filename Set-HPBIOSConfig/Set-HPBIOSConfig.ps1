@@ -1,5 +1,5 @@
 <#.DESCRIPTION
-    This will use the gathered BIOS config file from HP BiosConfigUtility and set your systems BIOS preferences. 
+    This script will use the gathered BIOS config file from HP BiosConfigUtility and set your systems BIOS preferences. 
     A BIOS Settings file can have .REPSET or .txt filextension, if you use .txt be sure to edit the script at Line 61
     Make sure your settings file is named the same as your Win32_ComputerSystem property Model, 
     eg "HP ZBook 15 G4.REPSET" as the script will call this WMI Class to match up with a settigsfile.
