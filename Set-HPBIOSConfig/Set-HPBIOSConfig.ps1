@@ -53,7 +53,7 @@ $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-
     $LogPath = $TSEnvironment.Value("_SMSTSLogPath")
 
 #Get ExitCode Info
-[XML]$BCUExitCodes = Get-Content ".\BCU_ExitCodes.xml"
+[XML]$BCUExitCodes = Get-Content "$BCUPath\BCU_ExitCodes.xml"
 
 # Run BCU and set BIOS Settings
     
