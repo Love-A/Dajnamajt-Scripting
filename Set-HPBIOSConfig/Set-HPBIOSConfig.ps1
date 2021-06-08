@@ -62,7 +62,7 @@ $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-
     $CurrentPassword = "$BCUPath\$PasswordFile.bin"
     $LogFile = "$LogPath\$ComputerSystemModel.REPSETLog.log"
 
-        # Run HP BCU Utility and try to create a new REPSET file for device
+        # Run HP BCU Utility and set BIOS Config for device
         $HPBCU = @{
             FilePath = "$BCUPath\BiosConfigUtility64.exe"
             ArgumentList = @(
