@@ -84,3 +84,4 @@ $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-
         $ExitCode = "exit$BCUExitCode"
         $ExitCodeMessage = $BCUExitCodes.exitcodes.$ExitCode
         Write-OutPut "$BCUExitCode - $ExitCodeMessage"
+        Exit $BCUExitCode
