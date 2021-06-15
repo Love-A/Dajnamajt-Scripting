@@ -120,7 +120,7 @@ $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-
                 $_.Exception.Message ; Exit 1
             }
 
-        #On success Exit and write exitmessage
+        #Exit and output exitmessage
 
         $ExitCode = "exit$BCUExitCode"
         $ExitCodeMessage = $BCUExitCodes.exitcodes.$ExitCode
