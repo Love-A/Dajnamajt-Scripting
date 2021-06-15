@@ -9,6 +9,17 @@
         BiosConfigUtility64.exe
         BIOSSettings.REPSET (or .txt)
         BCU_ExitCodes.xml
+        
+    The script uses the "config.xml" file to determine the following:
+    
+    $BCUPath
+    UNC Path to the Bios Settings and HP BCU utility
+    
+    $PasswordFile
+    The name of your "Password.bin" file
+    
+    $FileExt
+    The fileextension of your BCU Config files, eg .repset or .txt
 
     To Download HP BIOS Configuration Utility
     https://ftp.hp.com/pub/caps-softpaq/cmit/HP_BCU.html
