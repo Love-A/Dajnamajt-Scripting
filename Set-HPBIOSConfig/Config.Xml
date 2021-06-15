@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Config>
+	<!-- Add UNC path to HP BCU files -->
+	<HPBCUPath>\\SCCMSERVER\source$\OSD\Bios Settings</HPBCUPath>	
+	<!-- Enter the name of your password.bin file -->
+	<PWDFileName>Password</PWDFileName>	
+	<!-- enter the extension you use for your BIOS Config files, eg .REPSET or .txt-->
+	<FileExt>.REPSET</FileExt>
+</Config>
