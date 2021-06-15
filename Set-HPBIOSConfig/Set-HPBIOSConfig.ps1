@@ -18,7 +18,7 @@
     $PasswordFile
     The name of your "Password.bin" file
     
-    $FileExt
+    $RepsetExt
     The fileextension of your BCU Config files, eg .repset or .txt
 
     To Download HP BIOS Configuration Utility
