@@ -33,11 +33,15 @@
     Enter the UNCPath to the config.xml file, eg "\\SCCMSERVER\OSD$\Bios Settings\Config.xml"
 
 .EXAMPLE
-\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config .\config.xml
+\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config '.\config.xml'
 
 .EXAMPLE
-\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config \\SCCMSERVER\OSD$\Bios Settings\config.xml
+\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config '\\SCCMSERVER\OSD$\Bios Settings\config.xml'
 
+Updates: 
+2021-06-15 --- A bit of rewrite to use a "config.xml" for Script variables instead of script parameters, to make the script static and the only changes needed is in the config.xml
+               Added some more Try/catch
+               More logging
 
 
 #>
