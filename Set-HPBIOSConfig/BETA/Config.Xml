@@ -8,6 +8,6 @@
 	<FileExt>.REPSET</FileExt>
 	<!-- HP BCU Commandline, /Set or /Get HP BIOS Config-->
 	<SetGet>Set</SetGet>
-	<!-- Set the path to the folder where you want the config file saved-->
+	<!-- If "Get", enter the path to the folder where you want the config file saved-->
 	<GetPath>\\SERVER\SHARE$\OSD\BIOSSETTINGS\GET</GetPath>
 </Config>
