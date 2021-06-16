@@ -43,6 +43,7 @@ Updates:
                Added some more Try/catch
                More logging
 
+2021-06-16 --- Added <SetGet> to config.xml file, use this to change if BCU is to "/set" or "/get" BIOS Config. 
 
 #>
 
@@ -67,6 +68,7 @@ param(
         $BCUPath = $ScriptParam.Config.HPBCUPath
         $Passwordfile = $ScriptParam.Config.PWDFileName
         $RepsetExt = $ScriptParam.Config.FileExt
+        $SetGet = $ScriptParam.Config.SetGet
 
     Try{
         [XML]$BCUExitCodes = Get-Content "$BCUPath\BCU_ExitCodes.xml" -EA Stop
@@ -101,7 +103,7 @@ $ComputerSystemModel = Get-CimInstance -ClassName Win32_ComputerSystem | Select-
             $HPBCU = @{
                 FilePath = "$BCUPath\BiosConfigUtility64.exe"
                 ArgumentList = @(
-                    "`"/Set:$REPSETFile`"", `
+                    "`"/$SetGet`:$REPSETFile`"", `
                     "`"/cpwdfile:$CurrentPassword`"", `
                     "`"/verbose`""
                 )
