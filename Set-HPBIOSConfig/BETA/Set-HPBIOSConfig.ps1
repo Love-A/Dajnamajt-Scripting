@@ -43,7 +43,8 @@ Updates:
                Added some more Try/catch
                More logging
 
-2021-06-16 --- Added <SetGet> to config.xml file, use this to change if BCU is to "/set" or "/get" BIOS Config. 
+2021-06-16 --- Added <SetGet> to config.xml file, use this to change if BCU is to "/set" or "/get" BIOS Config. This makes it possible to have one Config for Set and one for Get,
+                if you would like to store your /get at one place, and your /set files at another.
 
 #>
 
