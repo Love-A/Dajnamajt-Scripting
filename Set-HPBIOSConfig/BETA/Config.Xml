@@ -6,6 +6,6 @@
 	<PWDFileName>Password</PWDFileName>	
 	<!-- enter the extension you use for your BIOS Config files, eg .REPSET or .txt-->
 	<FileExt>.REPSET</FileExt>
-	<!-- HP BCU Commandline, Set or Get HP BIOS Config-->
+	<!-- HP BCU Commandline, /Set or /Get HP BIOS Config-->
 	<SetGet>Set</SetGet>
 </Config>
