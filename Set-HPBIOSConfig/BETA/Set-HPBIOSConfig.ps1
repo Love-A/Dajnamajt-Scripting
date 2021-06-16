@@ -85,7 +85,7 @@ param(
             $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Continue 
             Write-Output "Task Sequence Variables loaded"
             }
-        Catch{Write-Output "Task Sequence Variables loaded, assuming run in full OS.."}
+        Catch{Write-Output "Task Sequence Variables not loaded, assuming run in full OS.."}
     }
     
 #Set BIOS Variables
