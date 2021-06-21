@@ -9,17 +9,6 @@
         BiosConfigUtility64.exe
         BIOSSettings.REPSET (or .txt)
         BCU_ExitCodes.xml
-        
-    The script uses the "config.xml" file to determine the following:
-    
-    $BCUPath
-    UNC Path to the Bios Settings and HP BCU utility
-    
-    $PasswordFile
-    The name of your "Password.bin" file
-    
-    $RepsetExt
-    The fileextension of your BCU Config files, eg .repset or .txt
 
     To Download HP BIOS Configuration Utility
     https://ftp.hp.com/pub/caps-softpaq/cmit/HP_BCU.html
@@ -29,24 +18,19 @@
 
 
 .PARAMETER Config
- Enter the UNCPath to the config.xml file, eg "\\SCCMSERVER\OSD$\Bios Settings\Config.xml"
+
+    Enter the UNCPath to the config.xml file, eg "\\SCCMSERVER\OSD$\Bios Settings\Config.xml"
 
 .EXAMPLE
-\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config '.\config.xml'
+\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config .\config.xml
 
 .EXAMPLE
-\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config '\\SCCMSERVER\OSD$\Bios Settings\config.xml'
+\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config \\SCCMSERVER\OSD$\Bios Settings\config.xml
 
-UPDATES: 
-2021-06-15 --- *A bit of rewrite to use a "config.xml" for Script variables instead of script parameters, to make the script static and the only changes needed is in the config.xml
-               *Added some more Try/catch
-               *More logging
 
-2021-06-16 --- *Added <SetGet> to config.xml file, use this to change if BCU is to "/set" or "/get" BIOS Config. This makes it possible to have one Config for Set and one for Get,
-                if you would like to store your /get at one place, and your /set files at another.
-               *Added code to check and handle if /Set or /get
 
 #>
+
 param(
     [Parameter(HelpMessage='UNC-Path to XML Configuration File', Mandatory = $True)]
     [ValidateNotNullOrEmpty()]
@@ -85,7 +69,11 @@ param(
             $TSEnvironment = New-Object -ComObject Microsoft.SMS.TSEnvironment -ErrorAction Continue 
             Write-Output "Task Sequence Variables loaded"
             }
-        Catch{Write-Output "Task Sequence Variables not loaded, assuming run in full OS.."}
+        Catch{
+			$_.Exception.Message
+			Write-Output "Task Sequence Variables not loaded, assuming run in full OS, outside of task sequence environment.."
+			$TSEnvironment = $null
+		}
     }
     
 #Set BIOS Variables
@@ -100,7 +88,6 @@ param(
             Write-Output "Trying to find $REPSETFile..."
         $LogFile = "$LogPath\$ComputerSystemModel.REPSETLog.log"
             Write-Output "Output will be logged to $LogFile..."
-
     }
     Else{
         $REPSETFile = "$GetPath\$ComputerSystemModel$RepsetExt"
@@ -141,9 +128,9 @@ param(
         $_.Exception.Message ; Exit 1
     }
 
-#Exit and write exitmessage
+$ExitCode = "exit$BCUExitCode"
+$ExitCodeMessage = $BCUExitCodes.exitcodes.$ExitCode
 
-    $ExitCode = "exit$BCUExitCode"
-    $ExitCodeMessage = $BCUExitCodes.exitcodes.$ExitCode
+#Exit and write exitmessage
     Write-OutPut "$BCUExitCode - $ExitCodeMessage"
-    Exit $BCUExitCode
+		Exit $BCUExitCode
