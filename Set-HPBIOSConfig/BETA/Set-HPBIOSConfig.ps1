@@ -118,10 +118,10 @@ param(
     Try{
         $BCUExitCode = (Start-Process @HPBCU).ExitCode
             if($SetGet -eq "set"){
-                Write-Output "Found BCU & Config, will try to config BIOS..."
+                Write-Output "HP BCU Parameters set, will try to config BIOS..."
             }
             else{
-                Write-Output "Creating config file..."
+                Write-Output "Will create HP BIOS config file..."
             }
     }
     Catch{
