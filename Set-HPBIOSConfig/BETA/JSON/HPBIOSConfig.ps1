@@ -8,7 +8,6 @@
         Passwordfile.bin
         BiosConfigUtility64.exe
         BIOSSettings.REPSET (or .txt)
-        BCU_ExitCodes.xml
 
     To Download HP BIOS Configuration Utility
     https://ftp.hp.com/pub/caps-softpaq/cmit/HP_BCU.html
@@ -19,20 +18,20 @@
 
 .PARAMETER Config
 
-    Enter the UNCPath to the config.xml file, eg "\\SCCMSERVER\OSD$\Bios Settings\Config.xml"
+    Enter the UNCPath to the config.json file, eg "\\SCCMSERVER\OSD$\Bios Settings\Config.json"
 
 .EXAMPLE
-\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config .\config.xml
+\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config .\config.json
 
 .EXAMPLE
-\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config \\SCCMSERVER\OSD$\Bios Settings\config.xml
+\\SCCMSERVER\BIOS$\Set-HPBIOSConfig.ps1 -Config \\SCCMSERVER\OSD$\Bios Settings\config.json
 
 
 
 #>
 
 param(
-    [Parameter(HelpMessage = 'UNC-Path to XML Configuration File', Mandatory = $True)]
+    [Parameter(HelpMessage = 'UNC-Path to JSON Configuration File', Mandatory = $True)]
     [ValidateNotNullOrEmpty()]
     [ValidateScript( { Test-Path -Path $_ -PathType Leaf })]
     [ValidatePattern('.json')]
